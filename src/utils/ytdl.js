@@ -5,15 +5,15 @@ import Utils from '~/utils/index.js';
 import logging from '~/utils/logging.js';
 
 class YTDL {
-	async getPlaylistData (playlistID) {
+	async getPlaylistData (playlistID, withVideos = true) {
 		return ytpl(playlistID, {
-			limit: Infinity,
+			limit: withVideos ? Infinity : 0,
 		});
 	}
 
 	async getPlaylist (playlistID, withVideos = true) {
 		try {
-			const playlist = await this.getPlaylistData(playlistID);
+			const playlist = await this.getPlaylistData(playlistID, withVideos);
 
 			return {
 				id: playlist.id,
