@@ -29,13 +29,19 @@ class AddPlaylist extends AbstractEndpoint {
 
 		ctx.title = title;
 		if (youTubePlaylistID) {
-			ctx.youTubePlaylist = await YTDL.getPlaylist(youTubePlaylistID);
+			// Get only the title first for a faster error
+			ctx.youTubePlaylist = await YTDL.getPlaylist(youTubePlaylistID, false);
 
 			ctx.title = ctx.youTubePlaylist.title;
 		}
 
 		if ((await PlaylistDatabase.getByTitle(ctx.title))) {
 			return super.returnError(ctx, 400, `Playlist with title "${ctx.title}" already exists`);
+		}
+
+		if (youTubePlaylistID) {
+			// Then get the playlist with all videos
+			ctx.youTubePlaylist = await YTDL.getPlaylist(youTubePlaylistID);
 		}
 
 		return next();
