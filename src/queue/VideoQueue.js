@@ -19,6 +19,7 @@ class VideoQueue extends AbstractQueue {
 		}
 		catch (error) {
 			logging.error(error);
+			throw error;
 		}
 	}
 

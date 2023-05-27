@@ -21,7 +21,7 @@ class Twitch {
 		}
 		catch (error) {
 			logging.error(error);
-			return error;
+			throw error;
 		}
 	}
 
@@ -83,6 +83,7 @@ class Twitch {
 			logging.error('There was an error in updating the Twitch token');
 			logging.error(error);
 			logging.error();
+			throw error;
 		}
 	}
 
@@ -109,7 +110,7 @@ class Twitch {
 		}
 		catch (error) {
 			logging.error(error);
-			return error;
+			throw error;
 		}
 	}
 
@@ -136,7 +137,7 @@ class Twitch {
 		}
 		catch (error) {
 			logging.error(error);
-			return error;
+			throw error;
 		}
 	}
 }

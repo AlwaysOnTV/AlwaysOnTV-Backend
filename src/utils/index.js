@@ -24,7 +24,7 @@ class Utils {
 		}
 		catch (error) {
 			logging.error(error);
-			return error;
+			throw error;
 		}
 	}
 
