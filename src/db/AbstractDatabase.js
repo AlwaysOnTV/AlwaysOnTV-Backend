@@ -36,7 +36,7 @@ export default class AbstractDatabase {
 		}
 		catch (error) {
 			logging.error(error);
-			return error;
+			throw error;
 		}
 	}
 
@@ -50,7 +50,7 @@ export default class AbstractDatabase {
 		}
 		catch (error) {
 			logging.error(error);
-			return error;
+			throw error;
 		}
 	}
 
@@ -64,7 +64,7 @@ export default class AbstractDatabase {
 		}
 		catch (error) {
 			logging.error(error);
-			return error;
+			throw error;
 		}
 	}
 

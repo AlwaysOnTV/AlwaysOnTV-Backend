@@ -107,7 +107,7 @@ class GameDatabase extends AbstractDatabase {
 			}
 			catch (error) {
 				logging.error(error);
-				return error;
+				throw error;
 			}
 		}
 

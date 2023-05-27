@@ -120,7 +120,7 @@ class PlaylistDatabase extends AbstractDatabase {
 			}
 			catch (error) {
 				logging.error(error);
-				return error;
+				throw error;
 			}
 		}
 		else {
@@ -171,7 +171,7 @@ class PlaylistDatabase extends AbstractDatabase {
 			}
 			catch (error) {
 				logging.error(error);
-				return error;
+				throw error;
 			}
 		}
 

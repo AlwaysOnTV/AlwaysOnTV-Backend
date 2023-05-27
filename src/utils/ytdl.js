@@ -31,7 +31,7 @@ class YTDL {
 		}
 		catch (error) {
 			logging.error(error);
-			return error;
+			throw error;
 		}
 	}
 
@@ -102,7 +102,7 @@ class YTDL {
 				return this.getBestVideoAndAudio(youtubeID, info, attempts);
 			}
 
-			return error;
+			throw error;
 		}
 	}
 }
