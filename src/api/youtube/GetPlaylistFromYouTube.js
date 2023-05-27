@@ -20,9 +20,7 @@ class GetPlaylistFromYouTube extends AbstractEndpoint {
 		try {
 			const { playlistId } = ctx.request.body;
 
-			const data = await YTDL.getPlaylist(playlistId, false);
-
-			ctx.body = data;
+			ctx.body = await YTDL.getPlaylist(playlistId, false);
 		}
 		catch (error) {
 			return super.returnError(ctx, 400, error);
