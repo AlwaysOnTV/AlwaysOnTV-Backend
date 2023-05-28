@@ -23,7 +23,7 @@ class AddVideoToQueue extends AbstractEndpoint {
 
 		const video = await VideoDatabase.getVideo(videoId);
 		if (!video) {
-			return super.returnError(ctx, 400, `Couldn't find video with ID ${videoId}`);
+			return super.error(ctx, `Couldn't find video with ID ${videoId}`);
 		}
 
 		ctx.video = video;
@@ -35,13 +35,11 @@ class AddVideoToQueue extends AbstractEndpoint {
 		try {
 			const video = ctx.video;
 
-			ctx.body = video;
+			return super.success(ctx, next, video);
 		}
 		catch (error) {
-			return super.returnError(ctx, 400, error);
+			return super.error(ctx, error);
 		}
-
-		return next();
 	}
 }
 

@@ -9,11 +9,11 @@ class AuthCallback extends AbstractEndpoint {
 
 	async authCallback (ctx, next) {
 		if (!ctx.session.grant) {
-			return super.returnError(ctx, 400, 'No session data present');
+			return super.error(ctx, 'No session data present');
 		}
 
 		if (ctx.session.grant.provider !== 'twitch') {
-			return super.returnError(ctx, 400, 'Not authenticated with Twitch');
+			return super.error(ctx, 'Not authenticated with Twitch');
 		}
 
 		let data = {};

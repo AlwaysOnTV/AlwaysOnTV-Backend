@@ -22,7 +22,7 @@ class GetPlaylistByID extends AbstractEndpoint {
 
 		const playlist = await PlaylistDatabase.getPlaylistWithVideosAndGames(playlistId);
 		if (!playlist) {
-			return super.returnError(ctx, 400, `Couldn't find playlist with ID ${playlistId}`);
+			return super.error(ctx, `Couldn't find playlist with ID ${playlistId}`);
 		}
 
 		ctx.playlist = playlist;
@@ -32,13 +32,11 @@ class GetPlaylistByID extends AbstractEndpoint {
 
 	async getPlaylistByID (ctx, next) {
 		try {
-			ctx.body = ctx.playlist;
+			return super.success(ctx, next, ctx.playlist);
 		}
 		catch (error) {
-			return super.returnError(ctx, 400, error);
+			return super.error(ctx, error);
 		}
-
-		return next();
 	}
 }
 

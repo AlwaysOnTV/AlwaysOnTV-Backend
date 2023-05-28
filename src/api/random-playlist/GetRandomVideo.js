@@ -12,19 +12,17 @@ class GetRandomVideo extends AbstractEndpoint {
 		try {
 			const randomVideo = await RandomPlaylistDatabase.getRandomVideo();
 			if (!randomVideo) {
-				return super.returnError(ctx, 400, 'The random playlist is empty.');
+				return super.error(ctx, 'The random playlist is empty.');
 			}
 
-			ctx.body = {
+			return super.success(ctx, next, {
 				...randomVideo,
 				...await YTDL.getBestVideoAndAudio(randomVideo.id),
-			};
+			});
 		}
 		catch (error) {
-			return super.returnError(ctx, 400, error);
+			return super.error(ctx, error);
 		}
-
-		return next();
 	}
 }
 

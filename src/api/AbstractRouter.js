@@ -15,18 +15,4 @@ export default class AbstractRouter {
 	setupRouter (router) {
 		this.router = router;
 	}
-
-	async returnStatus (ctx, next, status, message, body = {}) {
-		ctx.body = {
-			status,
-			message,
-			...body,
-		};
-
-		return next();
-	}
-
-	async returnError (ctx, next, error) {
-		return this.returnStatus(ctx, next, 400, error?.message || error);
-	}
 }

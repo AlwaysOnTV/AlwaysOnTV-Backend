@@ -28,20 +28,17 @@ class UpdateSettings extends AbstractEndpoint {
 			await Config.updateTitleReplacement(title_replacement);
 			await Config.updateUseRandomPlaylist(use_random_playlist);
 
-			return super.returnStatus(ctx, next, 200,
-				'Successfully updated settings',
-				{
-					updated: {
-						client_id,
-						client_secret,
-						title_replacement,
-						use_random_playlist,
-					},
+			return super.success(ctx, next, {
+				updated: {
+					client_id,
+					client_secret,
+					title_replacement,
+					use_random_playlist,
 				},
-			);
+			});
 		}
 		catch (error) {
-			return super.returnError(ctx, 400, error);
+			return super.error(ctx, error);
 		}
 	}
 }

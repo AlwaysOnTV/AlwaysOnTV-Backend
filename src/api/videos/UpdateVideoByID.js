@@ -29,7 +29,7 @@ class UpdateVideoByID extends AbstractEndpoint {
 		const videoId = ctx.params.id;
 
 		if (!(await VideoDatabase.getByID(videoId))) {
-			return super.returnError(ctx, 400, `No video with ID ${videoId} found`);
+			return super.error(ctx, `No video with ID ${videoId} found`);
 		}
 
 		ctx.videoId = videoId;
@@ -42,7 +42,7 @@ class UpdateVideoByID extends AbstractEndpoint {
 
 		if (gameId) {
 			if (!(await GameDatabase.getByID(gameId))) {
-				return super.returnError(ctx, 400, `No game with ID ${gameId} found`);
+				return super.error(ctx, `No game with ID ${gameId} found`);
 			}
 		}
 
@@ -53,16 +53,14 @@ class UpdateVideoByID extends AbstractEndpoint {
 		try {
 			const { title, gameId, thumbnail_url } = ctx.request.body;
 
-			return super.returnStatus(ctx, next, 200, 'Successfully edited video', {
-				data: await VideoDatabase.updateVideo(ctx.videoId, {
-					title,
-					gameId,
-					thumbnail_url,
-				}),
-			});
+			return super.success(ctx, next, await VideoDatabase.updateVideo(ctx.videoId, {
+				title,
+				gameId,
+				thumbnail_url,
+			}));
 		}
 		catch (error) {
-			return super.returnError(ctx, 400, error);
+			return super.error(ctx, error);
 		}
 	}
 }

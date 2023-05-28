@@ -26,19 +26,34 @@ export default class AbstractEndpoint {
 		return mws;
 	}
 
-	async returnStatus (ctx, next, status, message, body = {}) {
-		ctx.status = status;
+	async success (ctx, next, data = null) {
+		ctx.status = 200;
 
 		ctx.body = {
-			status,
-			message,
-			...body,
+			status: 'success',
+			data,
 		};
 
 		return next && next();
 	}
 
-	async returnError (ctx, errorCode = 400, messageOrError = '', body = {}) {
-		return this.returnStatus(ctx, null, errorCode, messageOrError?.message || messageOrError, body);
+	async fail (ctx, next, data = null) {
+		ctx.status = 200;
+
+		ctx.body = {
+			status: 'success',
+			data,
+		};
+
+		return next && next();
+	}
+
+	async error (ctx, messageOrError, statusCode = 400) {
+		ctx.status = statusCode;
+
+		ctx.body = {
+			status: 'error',
+			message: messageOrError?.message || messageOrError,
+		};
 	}
 }

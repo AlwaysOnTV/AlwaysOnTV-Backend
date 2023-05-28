@@ -25,13 +25,11 @@ class GetAllGames extends AbstractEndpoint {
 				order = 'desc';
 			}
 
-			ctx.body = await GameDatabase.getAllGames(order);
+			return super.success(ctx, next, await GameDatabase.getAllGames(order));
 		}
 		catch (error) {
-			return super.returnError(ctx, 400, error);
+			return super.error(ctx, error);
 		}
-
-		return next();
 	}
 }
 

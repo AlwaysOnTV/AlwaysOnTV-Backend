@@ -8,9 +8,7 @@ class GetSettings extends AbstractEndpoint {
 	}
 
 	async getSettings (ctx, next) {
-		ctx.body = await Config.getConfig();
-
-		return next();
+		return super.success(ctx, next, await Config.getConfig());
 	}
 }
 

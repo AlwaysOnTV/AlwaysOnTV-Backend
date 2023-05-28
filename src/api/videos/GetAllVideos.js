@@ -26,13 +26,11 @@ class GetAllVideos extends AbstractEndpoint {
 				order = 'desc';
 			}
 
-			ctx.body = await VideoDatabase.getAllVideos(order);
+			return super.success(ctx, next, await VideoDatabase.getAllVideos(order));
 		}
 		catch (error) {
-			return super.returnError(ctx, 400, error);
+			return super.error(ctx, error);
 		}
-
-		return next();
 	}
 }
 

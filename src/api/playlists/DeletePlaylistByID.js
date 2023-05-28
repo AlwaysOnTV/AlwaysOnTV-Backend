@@ -25,7 +25,7 @@ class DeletePlaylistByID extends AbstractEndpoint {
 
 		const playlist = await PlaylistDatabase.getPlaylistWithVideosAndGames(playlistId);
 		if (!playlist) {
-			return super.returnError(ctx, 400, `Couldn't find playlist with ID ${playlistId}`);
+			return super.error(ctx, `Couldn't find playlist with ID ${playlistId}`);
 		}
 
 		ctx.playlistId = playlistId;
@@ -37,15 +37,17 @@ class DeletePlaylistByID extends AbstractEndpoint {
 		const playlistId = ctx.playlistId;
 		const { force } = ctx.request.body;
 
-		const status = await PlaylistDatabase.deletePlaylist(playlistId, force);
-		if (status === true) {
-			return super.returnStatus(ctx, next, 200, `Successfully deleted playlist with ID ${playlistId}`);
+		try {
+			const status = await PlaylistDatabase.deletePlaylist(playlistId, force);
+			if (status === true) {
+				return super.success(ctx, next);
+			}
+			else {
+				return super.error(ctx, `Failed to delete playlist with ID ${playlistId}`);
+			}
 		}
-		else {
-			return super.returnError(ctx, 400, `Failed to delete playlist with ID ${playlistId}`, {
-				errorCode: status.errno,
-				errorMessage: status.code,
-			});
+		catch (error) {
+			return super.error(ctx, error);
 		}
 	}
 }

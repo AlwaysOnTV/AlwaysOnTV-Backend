@@ -25,7 +25,7 @@ class DeleteGameByID extends AbstractEndpoint {
 
 		const game = await GameDatabase.getByID(gameId);
 		if (!game) {
-			return super.returnError(ctx, 400, `Couldn't find game with ID ${gameId}`);
+			return super.error(ctx, `Couldn't find game with ID ${gameId}`);
 		}
 
 		ctx.gameId = gameId;
@@ -40,17 +40,14 @@ class DeleteGameByID extends AbstractEndpoint {
 			
 			const status = await GameDatabase.deleteGame(gameId, force);
 			if (status === true) {
-				return super.returnStatus(ctx, next, 200, `Successfully deleted game with ID ${gameId}`);
+				return super.success(ctx, next);
 			}
 			else {
-				return super.returnError(ctx, 400, `Failed to delete game with ID ${gameId}`, {
-					errorCode: status.errno,
-					errorMessage: status.code,
-				});
+				return super.error(ctx, `Failed to delete game with ID ${gameId}`);
 			}
 		}
 		catch (error) {
-			return super.returnError(ctx, 400, error);
+			return super.error(ctx, error);
 		}
 	}
 }

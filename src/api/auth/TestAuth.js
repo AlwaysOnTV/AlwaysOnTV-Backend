@@ -10,15 +10,17 @@ class TestAuth extends AbstractEndpoint {
 		const { authorization } = ctx.headers;
 
 		if (!authorization) {
-			return super.returnError(ctx, 401, 'Incorrect password');
+			return super.error(ctx, 'Incorrect password', 401);
 		}
 
 		const { password } = await Config.getConfig();
 		if (password && authorization !== password) {
-			return super.returnError(ctx, 401, 'Incorrect password');
+			return super.error(ctx, 'Incorrect password', 401);
 		}
 
-		return super.returnStatus(ctx, next, 200, 'Successfully authenticated.');
+		return super.success(ctx, next, {
+			authenticated: true,
+		});
 	}
 }
 

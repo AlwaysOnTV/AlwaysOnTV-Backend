@@ -22,7 +22,7 @@ class GetGameByID extends AbstractEndpoint {
 
 		const game = await GameDatabase.getByID(gameId);
 		if (!game) {
-			return super.returnError(ctx, 400, `Couldn't find game with ID ${gameId}`);
+			return super.error(ctx, `Couldn't find game with ID ${gameId}`);
 		}
 
 		ctx.game = game;
@@ -34,13 +34,11 @@ class GetGameByID extends AbstractEndpoint {
 		try {
 			const game = ctx.game;
 
-			ctx.body = game;
+			return super.success(ctx, next, game);
 		}
 		catch (error) {
-			return super.returnError(ctx, 400, error);
+			return super.error(ctx, error);
 		}
-
-		return next();
 	}
 }
 

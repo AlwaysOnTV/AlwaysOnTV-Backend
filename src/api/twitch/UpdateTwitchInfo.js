@@ -24,14 +24,14 @@ class UpdateTwitchInfo extends AbstractEndpoint {
 			const result = await Twitch.updateChannelInformation({ title, game_id });
 
 			if (!result) {
-				return super.returnStatus(ctx, next, 200, 'Successfully updated Twitch title and game');
+				return super.success(ctx, next);
 			}
 			else {
-				return super.returnError(ctx, 400, result);
+				return super.error(ctx, result);
 			}
 		}
 		catch (error) {
-			return super.returnError(ctx, 400, error);
+			return super.error(ctx, error);
 		}
 	}
 }

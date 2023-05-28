@@ -36,7 +36,7 @@ class AddPlaylist extends AbstractEndpoint {
 		}
 
 		if ((await PlaylistDatabase.getByTitle(ctx.title))) {
-			return super.returnError(ctx, 400, `Playlist with title "${ctx.title}" already exists`);
+			return super.error(ctx, `Playlist with title "${ctx.title}" already exists`);
 		}
 
 		if (youTubePlaylistID) {
@@ -54,7 +54,7 @@ class AddPlaylist extends AbstractEndpoint {
 
 		const game = await GameDatabase.getByID(gameId);
 		if (!game) {
-			return super.returnError(ctx, 400, `Couldn't find game with ID ${gameId}`);
+			return super.error(ctx, `Couldn't find game with ID ${gameId}`);
 		}
 
 		return next();
@@ -67,15 +67,13 @@ class AddPlaylist extends AbstractEndpoint {
 
 			const result = await PlaylistDatabase.createPlaylist(title, youTubePlaylist, addNewToRandomPlaylist, gameId);
 			if (!result) {
-				return super.returnError(ctx, 400, 'Failed to add playlist');
+				return super.error(ctx, 'Failed to add playlist');
 			}
 
-			return super.returnStatus(ctx, next, 200, 'Successfully added playlist', {
-				data: result,
-			});
+			return super.success(ctx, next, result);
 		}
 		catch (error) {
-			return super.returnError(ctx, 400, error);
+			return super.error(ctx, error);
 		}
 	}
 }

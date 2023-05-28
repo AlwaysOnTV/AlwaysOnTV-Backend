@@ -24,7 +24,7 @@ class AddPlaylistToQueue extends AbstractEndpoint {
 
 		const playlist = await PlaylistDatabase.getPlaylistWithVideosAndGames(playlistId);
 		if (!playlist) {
-			return super.returnError(ctx, 400, `Couldn't find playlist with ID ${playlistId}`);
+			return super.error(ctx, `Couldn't find playlist with ID ${playlistId}`);
 		}
 
 		ctx.playlist = playlist;
@@ -50,15 +50,10 @@ class AddPlaylistToQueue extends AbstractEndpoint {
 				});
 			}
 
-			return super.returnStatus(ctx, next, 200,
-				'Successfully added playlist to the queue',
-				{
-					data: await VideoQueue.add(videos),
-				},
-			);
+			return super.success(ctx, next, await VideoQueue.add(videos));
 		}
 		catch (error) {
-			return super.returnError(ctx, 400, error);
+			return super.error(ctx, error);
 		}
 	}
 }

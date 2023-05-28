@@ -25,13 +25,10 @@ class DeleteVideosFromPlaylist extends AbstractEndpoint {
 
 			const data = await RandomPlaylistDatabase.deleteVideos(videoIds);
 
-			return super.returnStatus(ctx, next, 200,
-				`Successfully removed ${data.deleted.length} videos from the random playlist`,	
-				data,
-			);
+			return super.success(ctx, next, data);
 		}
 		catch (error) {
-			return super.returnError(ctx, 400, error);
+			return super.error(ctx, error);
 		}
 	}
 }

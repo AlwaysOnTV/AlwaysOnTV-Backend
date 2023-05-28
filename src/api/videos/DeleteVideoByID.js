@@ -26,7 +26,7 @@ class DeleteVideoByID extends AbstractEndpoint {
 
 		const video = await VideoDatabase.getVideo(videoId);
 		if (!video) {
-			return super.returnError(ctx, 400, `Couldn't find video with ID ${videoId}`);
+			return super.error(ctx, `Couldn't find video with ID ${videoId}`);
 		}
 
 		ctx.videoId = videoId;
@@ -41,17 +41,14 @@ class DeleteVideoByID extends AbstractEndpoint {
 
 			const status = await VideoDatabase.deleteVideo(videoId, force);
 			if (status === true) {
-				return super.returnStatus(ctx, next, 200, `Successfully deleted video with ID ${videoId}`);
+				return super.success(ctx, next);
 			}
 			else {
-				return super.returnError(ctx, 400, `Failed to delete video with ID ${videoId}`, {
-					errorCode: status.errno,
-					errorMessage: status.code,
-				});
+				return super.error(ctx, status);
 			}
 		}
 		catch (error) {
-			return super.returnError(ctx, 400, error);
+			return super.error(ctx, error);
 		}
 	}
 }
