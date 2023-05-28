@@ -26,7 +26,7 @@ class DeleteVideoFromPlaylist extends AbstractEndpoint {
 
 		const playlist = await PlaylistDatabase.getPlaylistWithVideosAndGames(playlistId);
 		if (!playlist) {
-			return super.returnError(ctx, 400, `Couldn't find playlist with ID ${playlistId}`);
+			return super.error(ctx, `Couldn't find playlist with ID ${playlistId}`);
 		}
 
 		ctx.playlistId = playlistId;
@@ -41,13 +41,13 @@ class DeleteVideoFromPlaylist extends AbstractEndpoint {
 			const { index } = ctx.request.body;
 			
 			if (!(await PlaylistVideoDatabase.deleteVideoFromPlaylist(playlistId, index))) {
-				return super.returnError(ctx, 400, `No video at index ${index} found`);
+				return super.error(ctx, `No video at index ${index} found`);
 			}
 
-			return super.returnStatus(ctx, next, 200, `Successfully removed video at index ${index} from playlist ${playlistId}`);
+			return super.success(ctx, next);
 		}
 		catch (error) {
-			return super.returnError(ctx, 400, error);
+			return super.error(ctx, error);
 		}
 	}
 }

@@ -28,13 +28,11 @@ class GetVideoFromYouTube extends AbstractEndpoint {
 				thumbnail_url: data.videoDetails.thumbnails?.reverse()[0]?.url,
 			};
 	
-			ctx.body = ytdlData;
+			return super.success(ctx, next, ytdlData);
 		}
 		catch (error) {
-			return super.returnError(ctx, 400, error);
+			return super.error(ctx, error);
 		}
-	
-		return next();
 	}
 }
 

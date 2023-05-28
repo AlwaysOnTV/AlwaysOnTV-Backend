@@ -27,7 +27,7 @@ class UpdateGameByID extends AbstractEndpoint {
 
 		const game = await GameDatabase.getByID(gameId);
 		if (!game) {
-			return super.returnError(ctx, 400, `Couldn't find game with ID ${gameId}`);
+			return super.error(ctx, `Couldn't find game with ID ${gameId}`);
 		}
 
 		ctx.gameId = gameId;
@@ -41,15 +41,15 @@ class UpdateGameByID extends AbstractEndpoint {
 
 			const { title, thumbnail_url } = ctx.request.body;
 
-			return super.returnStatus(ctx, next, 200, 'Successfully edited game', {
-				data: await GameDatabase.updateGame(gameId, {
+			return super.success(ctx, next,
+				await GameDatabase.updateGame(gameId, {
 					title,
 					thumbnail_url,
 				}),
-			});
+			);
 		}
 		catch (error) {
-			return super.returnError(ctx, 400, error);
+			return super.error(ctx, error);
 		}
 	}
 }

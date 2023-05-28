@@ -27,7 +27,7 @@ class UpdateVideoInPlaylist extends AbstractEndpoint {
 
 		const playlist = await PlaylistDatabase.getPlaylistWithVideosAndGames(playlistId);
 		if (!playlist) {
-			return super.returnError(ctx, 400, `Couldn't find playlist with ID ${playlistId}`);
+			return super.error(ctx, `Couldn't find playlist with ID ${playlistId}`);
 		}
 
 		ctx.playlistId = playlistId;
@@ -41,13 +41,13 @@ class UpdateVideoInPlaylist extends AbstractEndpoint {
 			const { index, newIndex } = ctx.request.body;
 
 			if (!(await PlaylistVideoDatabase.moveVideoToIndex(playlistId, index, newIndex))) {
-				return super.returnError(ctx, 400, `No video at index ${index} found`);
+				return super.error(ctx, `No video at index ${index} found`);
 			}
 
-			return super.returnStatus(ctx, next, 200, `Successfully moved video from index ${index} to ${newIndex} in playlist ${playlistId}`);
+			return super.success(ctx, next);
 		}
 		catch (error) {
-			return super.returnError(ctx, 400, error);
+			return super.error(ctx, error);
 		}
 	}
 }

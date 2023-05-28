@@ -28,7 +28,7 @@ class AddVideoToPlaylist extends AbstractEndpoint {
 
 		const playlist = await PlaylistDatabase.getPlaylistWithVideosAndGames(playlistId);
 		if (!playlist) {
-			return super.returnError(ctx, 400, `Couldn't find playlist with ID ${playlistId}`);
+			return super.error(ctx, `Couldn't find playlist with ID ${playlistId}`);
 		}
 
 		ctx.playlistId = playlistId;
@@ -41,7 +41,7 @@ class AddVideoToPlaylist extends AbstractEndpoint {
 
 		const video = await VideoDatabase.getVideo(videoId);
 		if (!video) {
-			return super.returnError(ctx, 400, `Couldn't find video with ID ${videoId}`);
+			return super.error(ctx, `Couldn't find video with ID ${videoId}`);
 		}
 
 		ctx.videoId = videoId;
@@ -56,10 +56,10 @@ class AddVideoToPlaylist extends AbstractEndpoint {
 
 			await PlaylistVideoDatabase.addVideoToPlaylist(playlistId, videoId);
 
-			return super.returnStatus(ctx, next, 200, `Successfully added video ${videoId} to playlist ${playlistId}`);
+			return super.success(ctx, next);
 		}
 		catch (error) {
-			return super.returnError(ctx, 400, error);
+			return super.error(ctx, error);
 		}
 	}
 }

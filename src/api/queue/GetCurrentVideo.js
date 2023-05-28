@@ -14,7 +14,7 @@ class GetCurrentVideo extends AbstractEndpoint {
 			const video = await VideoQueue.getFirst();
 
 			if (!video) {
-				return super.returnError(ctx, 400, 'No items in the queue');
+				return super.error(ctx, 'No items in the queue');
 			}
 
 			const data = {
@@ -22,13 +22,11 @@ class GetCurrentVideo extends AbstractEndpoint {
 				...await YTDL.getBestVideoAndAudio(video.id),
 			};
 
-			ctx.body = data;
+			return super.success(ctx, next, data);
 		}
 		catch (error) {
-			return super.returnError(ctx, 400, error);
+			return super.error(ctx, error);
 		}
-
-		return next();
 	}
 }
 

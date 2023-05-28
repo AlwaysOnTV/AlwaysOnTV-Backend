@@ -21,7 +21,7 @@ class UpdatePlaylistByID extends AbstractEndpoint {
 		const playlistId = ctx.params.id;
 
 		if (!(await PlaylistDatabase.getByID(playlistId))) {
-			return super.returnError(ctx, 400, `No playlist with ID ${playlistId} found`);
+			return super.error(ctx, `No playlist with ID ${playlistId} found`);
 		}
 
 		ctx.playlistId = playlistId;
@@ -33,13 +33,11 @@ class UpdatePlaylistByID extends AbstractEndpoint {
 		try {
 			const { title } = ctx.request.body;
 
-			ctx.body = await PlaylistDatabase.updatePlaylist(ctx.playlistId, title);
+			return super.success(ctx, next, await PlaylistDatabase.updatePlaylist(ctx.playlistId, title));
 		}
 		catch (error) {
-			return super.returnError(ctx, 400, error);
+			return super.error(ctx, error);
 		}
-
-		return next();
 	}
 }
 

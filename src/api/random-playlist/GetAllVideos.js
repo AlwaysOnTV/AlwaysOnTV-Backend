@@ -9,13 +9,11 @@ class GetAllVideos extends AbstractEndpoint {
 
 	async getAllVideos (ctx, next) {
 		try {
-			ctx.body = await RandomPlaylistDatabase.getAll();
+			return super.success(ctx, next, await RandomPlaylistDatabase.getAll());
 		}
 		catch (error) {
-			return super.returnError(ctx, 400, error);
+			return super.error(ctx, error);
 		}
-
-		return next();
 	}
 }
 

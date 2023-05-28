@@ -14,7 +14,7 @@ class DeleteVideoFromQueue extends AbstractEndpoint {
 		const parsedIndex = parseInt(index, 10);
 
 		if (!Number.isFinite(parsedIndex)) {
-			return super.returnError(ctx, 400, `Invalid value for index: ${index}`);
+			return super.error(ctx, `Invalid value for index: ${index}`);
 		}
 
 		ctx.index = parsedIndex;
@@ -28,13 +28,13 @@ class DeleteVideoFromQueue extends AbstractEndpoint {
 
 			const result = await VideoQueue.remove(index);
 			if (!Array.isArray(result)) {
-				return super.returnError(ctx, 400, result);
+				return super.error(ctx, result);
 			}
 
-			return super.returnStatus(ctx, next, 200, `Successfully removed video at position ${index + 1} from the queue`);
+			return super.success(ctx, next);
 		}
 		catch (error) {
-			return super.returnError(ctx, 400, error);
+			return super.error(ctx, error);
 		}
 	}
 }

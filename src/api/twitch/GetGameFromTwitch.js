@@ -22,13 +22,11 @@ class GetGameFromTwitch extends AbstractEndpoint {
 		try {
 			const { id, name, igdb_id } = ctx.request.body;
 
-			ctx.body = await Twitch.getGameByData({ id, name, igdb_id });
+			return super.success(ctx, next, await Twitch.getGameByData({ id, name, igdb_id }));
 		}
 		catch (error) {
-			return super.returnError(ctx, 400, error);
+			return super.error(ctx, error);
 		}
-
-		return next();
 	}
 }
 

@@ -14,7 +14,7 @@ class GetNextVideo extends AbstractEndpoint {
 			const result = await VideoQueue.advanceQueue();
 
 			if (!result) {
-				return super.returnError(ctx, 400, 'No items in the queue');
+				return super.error(ctx, 'No items in the queue');
 			}
 
 			if (result) {
@@ -23,17 +23,15 @@ class GetNextVideo extends AbstractEndpoint {
 					...await YTDL.getBestVideoAndAudio(result.id),
 				};
 
-				ctx.body = data;
+				return super.success(ctx, next, data);
 			}
 			else {
-				return super.returnError(ctx, 400, 'No more items in the queue');
+				return super.error(ctx, 'No more items in the queue');
 			}
 		}
 		catch (error) {
-			return super.returnError(ctx, 400, error);
+			return super.error(ctx, error);
 		}
-	
-		return next();
 	}
 }
 

@@ -24,7 +24,7 @@ class AddGame extends AbstractEndpoint {
 
 		const game = await GameDatabase.getByID(gameId);
 		if (game) {
-			return super.returnError(ctx, 400, `Game with ID ${gameId} already exists.`);
+			return super.error(ctx, `Game with ID ${gameId} already exists.`);
 		}
 
 		return next();
@@ -34,12 +34,10 @@ class AddGame extends AbstractEndpoint {
 		try {
 			const { gameId, title, thumbnail_url } = ctx.request.body;
 
-			return super.returnStatus(ctx, next, 200, 'Successfully added game', {
-				data: await GameDatabase.createGame(gameId, title, thumbnail_url),
-			});
+			return super.success(ctx, next, await GameDatabase.createGame(gameId, title, thumbnail_url));
 		}
 		catch (error) {
-			return super.returnError(ctx, 400, error);
+			return super.error(ctx, error);
 		}
 	}
 }

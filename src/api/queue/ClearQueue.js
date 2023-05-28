@@ -11,10 +11,10 @@ class ClearQueue extends AbstractEndpoint {
 		try {
 			await VideoQueue.clear();
 
-			return super.returnStatus(ctx, next, 200, 'Successfully cleared the queue');
+			return super.success(ctx, next);
 		}
 		catch (error) {
-			return super.returnError(ctx, 400, error);
+			return super.error(ctx, error);
 		}
 	}
 }

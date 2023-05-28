@@ -9,13 +9,11 @@ class GetAllPlaylists extends AbstractEndpoint {
 
 	async getAllPlaylists (ctx, next) {
 		try {
-			ctx.body = await PlaylistDatabase.getAllPlaylists();
+			return super.success(ctx, next, await PlaylistDatabase.getAllPlaylists());
 		}
 		catch (error) {
-			return super.returnError(ctx, 400, error);
+			return super.error(ctx, error);
 		}
-
-		return next();
 	}
 }
 

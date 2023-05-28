@@ -27,18 +27,13 @@ class UpdateQueue extends AbstractEndpoint {
 
 			const result = await VideoQueue.move(index, newIndex);
 			if (!Array.isArray(result)) {
-				return super.returnError(ctx, 400, result);
+				return super.error(ctx, result);
 			}
 
-			return super.returnStatus(ctx, next, 200,
-				'Successfully moved video',
-				{
-					data: result,
-				},
-			);
+			return super.success(ctx, next, result);
 		}
 		catch (error) {
-			return super.returnError(ctx, 400, error);
+			return super.error(ctx, error);
 		}
 	}
 }

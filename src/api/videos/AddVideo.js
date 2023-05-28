@@ -29,7 +29,7 @@ class AddVideo extends AbstractEndpoint {
 
 		const game = await GameDatabase.getByID(gameId);
 		if (!game) {
-			return super.returnError(ctx, 400, `Couldn't find game with ID ${gameId}`);
+			return super.error(ctx, `Couldn't find game with ID ${gameId}`);
 		}
 
 		return next();
@@ -49,7 +49,7 @@ class AddVideo extends AbstractEndpoint {
 			};
 		
 			if ((await VideoDatabase.getByID(dbData.id))) {
-				return super.returnError(ctx, 400, `Video with ID ${dbData.id} already exists`);
+				return super.error(ctx, `Video with ID ${dbData.id} already exists`);
 			}
 
 			const video = await VideoDatabase.createVideo(dbData);
@@ -59,15 +59,13 @@ class AddVideo extends AbstractEndpoint {
 				randomPlaylistData = await RandomPlaylistDatabase.addVideos(dbData.id);
 			}
 
-			return super.returnStatus(ctx, next, 200, 'Successfully added video', {
-				data: {
-					video,
-					randomPlaylistData,
-				},
+			return super.success(ctx, next, {
+				video,
+				randomPlaylistData,
 			});
 		}
 		catch (error) {
-			return super.returnError(ctx, 400, error);
+			return super.error(ctx, error);
 		}
 	}
 }
