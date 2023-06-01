@@ -17,6 +17,7 @@
   "dependencies": {
     "@babel/core": "^7.21.8",
     "@babel/eslint-parser": "^7.21.8",
+    "@distube/ytdl-core": "^4.11.10",
     "@koa/cors": "^4.0.0",
     "@koa/router": "^12.0.0",
     "better-sqlite3": "^8.4.0",
@@ -41,7 +42,6 @@
     "koa-static": "^5.0.0",
     "link-module-alias": "^1.2.0",
     "tmi.js": "^1.8.5",
-    "ytdl-core": "github:khlevon/node-ytdl-core#v4.11.4-patch.2",
     "ytpl": "^2.3.0"
   },
   "devDependencies": {
