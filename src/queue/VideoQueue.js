@@ -14,7 +14,7 @@ class VideoQueue extends AbstractQueue {
 		try {
 			await Twitch.updateChannelInformation({ 
 				title: video.title,
-				game_id: video.game?.gameId || video.gameId,
+				game_id: video.game?.id || video.gameId,
 			});
 		}
 		catch (error) {

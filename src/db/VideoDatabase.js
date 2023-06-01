@@ -50,7 +50,7 @@ class VideoDatabase extends AbstractDatabase {
 			const { gameId, gameTitle, ...videoData } = result;
 			const videoWithGame = {
 				...videoData,
-				game: { gameId, title: gameTitle },
+				game: { id: gameId, title: gameTitle },
 			};
 			return videoWithGame;
 		} else {
