@@ -1,4 +1,4 @@
-import ytdl from 'ytdl-core';
+import ytdl from '@distube/ytdl-core';
 import ytpl from 'ytpl';
 import utils from '~/utils/index.js';
 import Utils from '~/utils/index.js';
