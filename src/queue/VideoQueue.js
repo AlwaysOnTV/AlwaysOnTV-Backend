@@ -4,6 +4,7 @@ import RandomPlaylistDatabase from '~/db/RandomPlaylistDatabase.js';
 import Twitch from '~/utils/twitch.js';
 import Config from '~/utils/config.js';
 import HistoryQueue from '~/queue/HistoryQueue.js';
+import ytdl from '~/utils/ytdl.js';
 
 class VideoQueue extends AbstractQueue {
 	constructor () {
@@ -55,21 +56,27 @@ class VideoQueue extends AbstractQueue {
 			if (randomVideo) {
 				await this.add(randomVideo);
 
-				return randomVideo;
+				return this.getFirst();
 			}
+		}
+
+		if (!(await this.isVideoValid(first))) {
+			return this.advanceQueue();
 		}
 
 		return first;
 	}
 
 	async advanceQueue () {
-		const currentVideo = await this.getFirst();
+		const currentVideo = await super.getFirst();
 
+		// TODO: Handle age-restricted videos better. Show an error in the dashboard maybe?
+		// Add error code / message to the video if "isVideoValid" fails
 		if (currentVideo) {
 			await HistoryQueue.addFirst(currentVideo);
 		}
 
-		const nextVideo = await super.advanceQueue();
+		let nextVideo = await super.advanceQueue();
 
 		const { use_random_playlist } = await Config.getConfig();
 
@@ -79,8 +86,12 @@ class VideoQueue extends AbstractQueue {
 			if (randomVideo) {
 				await this.add(randomVideo);
 
-				return randomVideo;
+				nextVideo = randomVideo;
 			}
+		}
+
+		if (!(await this.isVideoValid(nextVideo))) {
+			return this.advanceQueue();
 		}
 
 		if (nextVideo) {
@@ -88,6 +99,14 @@ class VideoQueue extends AbstractQueue {
 		}
 
 		return nextVideo;
+	}
+
+	async isVideoValid (video) {
+		const info = await ytdl.getVideoInfo(video.id);
+		
+		if (info?.videoDetails?.age_restricted) return false;
+
+		return true;
 	}
 }
 

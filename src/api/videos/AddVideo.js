@@ -39,7 +39,7 @@ class AddVideo extends AbstractEndpoint {
 		try {
 			const { videoId, gameId, addToRandomPlaylist } = ctx.request.body;
 
-			const data = await YTDL.getVideoData(videoId);
+			const data = await YTDL.getVideoInfo(videoId);
 	
 			const dbData = {
 				id: data.videoDetails.videoId,

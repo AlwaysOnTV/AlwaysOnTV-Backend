@@ -1,9 +1,10 @@
 import Grant from 'grant-koa';
+import Config from '~/utils/config.js';
 
 const grant = Grant({
 	defaults: {
 		protocol: 'http',
-		host: 'localhost:8085',
+		host: `localhost:${(await Config.getConfig()).server.port}`,
 		path: '/auth',
 		callback: '/auth/callback',
 		transport: 'session',

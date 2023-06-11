@@ -8,11 +8,12 @@ class Config {
 			password: 'AlwaysOnTV',
 			server: {
 				port: 8085,
-				use_cors: true,
-				cors_port: 8086,
-				cors_url: 'http://localhost:8086',
+				api_url: 'http://localhost:8085/api',
 			},
 			twitch: {
+				enabled: false,
+				title_replacement: '[24/7 AlwaysOnTV] {{videoTitle}}',
+
 				client_id: '',
 				client_secret: '',
 				access_token: '',
@@ -20,7 +21,8 @@ class Config {
 				expires_at: 0,
 				channel_id: '',
 			},
-			title_replacement: '[24/7 AlwaysOnTV] {{videoTitle}}',
+			// TODO: allow configuring this
+			max_video_quality: 1080,
 			use_random_playlist: true,
 		};
 
@@ -79,10 +81,26 @@ class Config {
 		await fs.promises.writeFile(this.path, JSON.stringify(this.config, null, 2), 'utf-8');
 	}
 
+	getCachedConfig () {
+		return this.config;
+	}
+
 	async getTwitchData () {
 		const config = await this.getConfig();
 
 		return config.twitch;
+	}
+
+	async isTwitchEnabled () {
+		const { enabled } = await this.getTwitchData();
+
+		return enabled;
+	}
+
+	async updateTwitchEnabled (twitch_enabled) {
+		this.config.twitch.enabled = twitch_enabled ?? this.config.twitch.enabled;
+
+		await this.saveConfig();
 	}
 
 	async updateTwitchClientOrSecret (client_id, client_secret) {
@@ -99,7 +117,7 @@ class Config {
 	}
 
 	async updateTitleReplacement (title_replacement) {
-		this.config.title_replacement = title_replacement ?? this.config.title_replacement;
+		this.config.twitch.title_replacement = title_replacement ?? this.config.twitch.title_replacement;
 
 		await this.saveConfig();
 	}

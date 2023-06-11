@@ -1,5 +1,3 @@
-import YTDL from '~/utils/ytdl.js';
-
 import VideoQueue from '~/queue/VideoQueue.js';
 
 import AbstractEndpoint from '~/api/AbstractEndpoint.js';
@@ -19,7 +17,6 @@ class GetCurrentVideo extends AbstractEndpoint {
 
 			const data = {
 				...video,
-				...await YTDL.getBestVideoAndAudio(video.id),
 			};
 
 			return super.success(ctx, next, data);

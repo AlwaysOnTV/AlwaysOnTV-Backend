@@ -28,7 +28,7 @@ class Twitch {
 	async getBroadcasterID () {
 		const { data } = await Config.getTwitchData();
 
-		return data.id;
+		return data?.id;
 	}
 
 	async getClientID () {
@@ -50,7 +50,7 @@ class Twitch {
 	async getAccessToken (force_renew = false) {
 		const { access_token, refresh_token, expires_at, client_id, client_secret } = await Config.getTwitchData();
 
-		if (!access_token || !refresh_token || !expires_at) return null;
+		if (!access_token || !refresh_token || !expires_at || !client_id || !client_secret) return null;
 
 		if (dayjs().isBefore(expires_at) && !force_renew) return access_token;
 
@@ -115,12 +115,23 @@ class Twitch {
 	}
 
 	async updateChannelInformation ({ title, game_id }) {
+		const twitchEnabled = await Config.isTwitchEnabled();
+		if (!twitchEnabled) return true;
+
 		try {
 			const client_id = await this.getClientID();
 			const access_token = await this.getAccessToken();
 			const broadcaster_id = await this.getBroadcasterID();
 
-			const { title_replacement } = await Config.getConfig();
+			if (!client_id || !access_token || !broadcaster_id) {
+				const error = new Error('No valid client_id, access token or broadcaster ID found.');
+				
+				logging.error(error);
+				throw error;
+			}
+
+			const { twitch } = await Config.getConfig();
+			const { title_replacement } = twitch;
 
 			const json = await Utils.patchAsJSON(`https://api.twitch.tv/helix/channels?broadcaster_id=${broadcaster_id}`, {
 				headers: {

@@ -29,6 +29,7 @@ async function setupKoa () {
 	app.use(etag());
 	app.use(cors({
 		origin: '*',
+		maxAge: 1728000,
 	}));
 	app.use(json());
 

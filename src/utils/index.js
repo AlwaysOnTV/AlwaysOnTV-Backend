@@ -4,20 +4,18 @@ import logging from '~/utils/logging.js';
 
 class Utils {
 	async proxy (url) {
-		const { use_cors, cors_url } = (await Config.getConfig()).server;
-		if (!use_cors) return url;
-
-		return `${cors_url}/${url}`;
+		return `${(await Config.getConfig()).server.api_url}/proxy/${url}`;
 	}
 	
 	async sleep (ms) {
 		return new Promise(r => setTimeout(r, ms));
 	}
 
-	async request (_url, options) {
+	async request (_url, options = {}) {
 		try {
 			const url = new URL(_url);
 
+			options.headers = options.headers || {};
 			options.headers['content-type'] = 'application/json';
 
 			return await got(url, options).json();
