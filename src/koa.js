@@ -11,6 +11,8 @@ import session from 'koa-session';
 import mount from 'koa-mount';
 import grant from '~/grant.js';
 
+import setupSocket from '~/socket.js';
+
 // --- Setup Koa
 
 import path from 'node:path';
@@ -72,7 +74,9 @@ export default async function start () {
 	
 	const port = (await Config.getConfig()).server.port;
 
-	app.listen(port, () => {
+	const server = app.listen(port, () => {
 		logging.info(`Koa server listening on localhost:${port}`);
 	});
+
+	setupSocket(server);
 }

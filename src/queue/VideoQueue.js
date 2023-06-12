@@ -5,6 +5,7 @@ import Twitch from '~/utils/twitch.js';
 import Config from '~/utils/config.js';
 import HistoryQueue from '~/queue/HistoryQueue.js';
 import ytdl from '~/utils/ytdl.js';
+import { io } from '~/socket.js';
 
 class VideoQueue extends AbstractQueue {
 	constructor () {
@@ -34,6 +35,8 @@ class VideoQueue extends AbstractQueue {
 
 		if (wasEmpty && !skipUpdate) {
 			const currentVideo = await this.getFirst();
+
+			await HistoryQueue.addFirst(currentVideo);
 
 			await this.updateChannelInformation(currentVideo);
 		}
@@ -68,14 +71,6 @@ class VideoQueue extends AbstractQueue {
 	}
 
 	async advanceQueue () {
-		const currentVideo = await super.getFirst();
-
-		// TODO: Handle age-restricted videos better. Show an error in the dashboard maybe?
-		// Add error code / message to the video if "isVideoValid" fails
-		if (currentVideo) {
-			await HistoryQueue.addFirst(currentVideo);
-		}
-
 		let nextVideo = await super.advanceQueue();
 
 		const { use_random_playlist } = await Config.getConfig();
@@ -97,6 +92,8 @@ class VideoQueue extends AbstractQueue {
 		if (nextVideo) {
 			await this.updateChannelInformation(nextVideo);
 		}
+
+		io.emit('next_video');
 
 		return nextVideo;
 	}

@@ -44,6 +44,7 @@
 		"link-module-alias": "^1.2.0",
 		"node-cache": "^5.1.2",
 		"pino": "^8.14.1",
+		"socket.io": "^4.6.2",
 		"tmi.js": "^1.8.5",
 		"ytcog": "^2.5.0"
 	},
