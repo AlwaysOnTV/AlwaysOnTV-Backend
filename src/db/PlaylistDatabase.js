@@ -1,7 +1,7 @@
-import logging from '~/utils/logging.js';
 import AbstractDatabase from './AbstractDatabase.js';
 
 import GameDatabase from '~/db/GameDatabase.js';
+import pino from '~/utils/pino.js';
 
 class PlaylistDatabase extends AbstractDatabase {
 	constructor () {
@@ -119,7 +119,8 @@ class PlaylistDatabase extends AbstractDatabase {
 				});
 			}
 			catch (error) {
-				logging.error(error);
+				pino.error('Error in PlaylistDatabase.createPlaylist');
+				pino.error(error);
 				throw error;
 			}
 		}
@@ -170,7 +171,8 @@ class PlaylistDatabase extends AbstractDatabase {
 				});
 			}
 			catch (error) {
-				logging.error(error);
+				pino.error('Error in PlaylistDatabase.deletePlaylist');
+				pino.error(error);
 				throw error;
 			}
 		}

@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import Knex from 'knex';
 import knexfile from '~/knexfile.js';
-import logging from '~/utils/logging.js';
+import pino from '~/utils/pino.js';
 
 let knex;
 
@@ -20,5 +20,5 @@ export async function initializeDatabase () {
 		await Database.init(knex);
 	}
 
-	logging.info('Initialized databases.');
+	pino.info('Initialized databases');
 }

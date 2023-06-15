@@ -1,5 +1,5 @@
 import fs from 'node:fs';
-import logging from '~/utils/logging.js';
+import pino from '~/utils/pino.js';
 
 class Config {
 	constructor () {
@@ -63,7 +63,7 @@ class Config {
 			if (!(await this.configExists())) {
 				await this.saveConfig();
 
-				logging.info('Default configuration created. Please fill in the Twitch client_id and client_secret in the settings.');
+				pino.info('Default configuration created. Please setup your Twitch connection on the Settings page.');
 			}
 
 			this.config = JSON.parse(await fs.promises.readFile(this.path, 'utf-8'));
@@ -71,7 +71,8 @@ class Config {
 			return this.config;
 		}
 		catch (error) {
-			logging.error('Error loading config', error);
+			pino.error('Error in Config.getConfig');
+			pino.error(error);
 			return false;
 		}
 	}

@@ -17,7 +17,6 @@ import setupSocket from '~/socket.js';
 
 import path from 'node:path';
 import { readFile } from 'node:fs/promises';
-import logging from '~/utils/logging.js';
 
 async function setupKoa () {
 	const app = new Koa();
@@ -66,6 +65,7 @@ async function setupKoa () {
 
 import setupRouters from '~/api/index.js';
 import Config from '~/utils/config.js';
+import pino from '~/utils/pino.js';
 
 export default async function start () {
 	const app = await setupKoa();
@@ -75,7 +75,7 @@ export default async function start () {
 	const port = (await Config.getConfig()).server.port;
 
 	const server = app.listen(port, () => {
-		logging.info(`Koa server listening on localhost:${port}`);
+		pino.info(`Koa server listening on localhost:${port}`);
 	});
 
 	setupSocket(server);

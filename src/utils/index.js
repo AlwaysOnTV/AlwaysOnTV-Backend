@@ -1,6 +1,6 @@
 import got from 'got';
 import Config from '~/utils/config.js';
-import logging from '~/utils/logging.js';
+import pino from '~/utils/pino.js';
 
 class Utils {
 	async proxy (url) {
@@ -21,7 +21,8 @@ class Utils {
 			return await got(url, options).json();
 		}
 		catch (error) {
-			logging.error(error);
+			pino.error('Error in Utils.request');
+			pino.error(error);
 			throw error;
 		}
 	}

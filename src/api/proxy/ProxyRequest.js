@@ -54,31 +54,14 @@ class ProxyRequest extends AbstractEndpoint {
 
 		headers.range = `bytes=${range.from}-${range.to}`;
 
-		try {
-			const data = got.stream(url, { headers }).on('error', async error => {
-				console.error('got.stream error', error);
-
-				pino.error(error);
-				// await appendFile('gotError.txt', 'inner got.stream error');
-				// await appendFile('gotError.txt', `${error.toString()}\n`);
-				// await appendFile('gotError.txt', '\n');
-				
-				return super.error(ctx, error, 500);
-			});
+		const data = got.stream(url, { headers }).on('error', async error => {
+			pino.error('Error in ProxyRequest.proxyRequest .. got.stream');
+			pino.error(error);
 			
-			ctx.body = data;
-		}
-		catch (gotError) {
-			// TODO: Error 403 means we need to fetch new youtube video. How do we do this from here?
-			
-			// console.error('Stream error', gotError);
-			pino.error(gotError);
-			// await appendFile('gotError.txt', 'got.stream error');
-			// await appendFile('gotError.txt', `${gotError.toString()}\n`);
-			// await appendFile('gotError.txt', '\n');
-
-			return super.error(ctx, gotError, 500);
-		}
+			return super.error(ctx, error, 500);
+		});
+		
+		ctx.body = data;
 
 		return next();
 	}

@@ -1,4 +1,3 @@
-import logging from '~/utils/logging.js';
 import AbstractQueue from './AbstractQueue.js';
 import RandomPlaylistDatabase from '~/db/RandomPlaylistDatabase.js';
 import Twitch from '~/utils/twitch.js';
@@ -6,6 +5,7 @@ import Config from '~/utils/config.js';
 import HistoryQueue from '~/queue/HistoryQueue.js';
 import ytdl from '~/utils/ytdl.js';
 import { io } from '~/socket.js';
+import pino from '~/utils/pino.js';
 
 class VideoQueue extends AbstractQueue {
 	constructor () {
@@ -20,8 +20,8 @@ class VideoQueue extends AbstractQueue {
 			});
 		}
 		catch (error) {
-			logging.error(error);
-			throw error;
+			pino.error('Error in VideoQueue.updateChannelInformation');
+			pino.error(error);
 		}
 	}
 

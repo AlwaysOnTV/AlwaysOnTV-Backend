@@ -1,5 +1,5 @@
 import fs from 'node:fs';
-import logging from '~/utils/logging.js';
+import pino from '~/utils/pino.js';
 
 export default class AbstractQueue {
 	constructor (path, maxLength = -1) {
@@ -36,7 +36,8 @@ export default class AbstractQueue {
 			this.queue = JSON.parse(await fs.promises.readFile(this.path, 'utf-8'));
 		}
 		catch (error) {
-			logging.error('Error parsing queue', error);
+			pino.error('Error in AbstractQueue.loadQueue');
+			pino.error(error);
 		}
 	}
 
@@ -56,7 +57,8 @@ export default class AbstractQueue {
 
 	async get (index) {
 		if (index < 0 || index >= this.queue.length) {
-			logging.error('Invalid index');
+			pino.error('Error in AbstractQueue.get - Invalid index');
+			pino.error(`Index: ${index}`);
 			return false;
 		}
 		
@@ -89,7 +91,8 @@ export default class AbstractQueue {
 
 	async remove (index) {
 		if (index < 0 || index >= this.queue.length) {
-			logging.error('Invalid index');
+			pino.error('Error in AbstractQueue.remove - Invalid index');
+			pino.error(`Index: ${index}`);
 			return false;
 		}
 

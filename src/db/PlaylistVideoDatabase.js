@@ -1,5 +1,5 @@
-import logging from '~/utils/logging.js';
 import AbstractDatabase from './AbstractDatabase.js';
+import pino from '~/utils/pino.js';
 
 class PlaylistDatabase extends AbstractDatabase {
 	constructor () {
@@ -62,7 +62,8 @@ class PlaylistDatabase extends AbstractDatabase {
 			return true;
 		}
 		catch (error) {
-			logging.error(error);
+			pino.error('Error in PlaylistVideoDatabase.fixPlaylistPositions');
+			pino.error(error);
 			return false;
 		}
 	}
@@ -148,7 +149,8 @@ class PlaylistDatabase extends AbstractDatabase {
 			return true;
 		}
 		catch (error) {
-			logging.error(error);
+			pino.error('Error in PlaylistVideoDatabase.moveVideoToIndex');
+			pino.error(error);
 			return false;
 		}
 	}

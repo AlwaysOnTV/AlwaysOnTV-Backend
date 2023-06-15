@@ -1,6 +1,6 @@
-import logging from '~/utils/logging.js';
 import AbstractDatabase from './AbstractDatabase.js';
 import PlaylistVideoDatabase from '~/db/PlaylistVideoDatabase.js';
+import pino from '~/utils/pino.js';
 
 class VideoDatabase extends AbstractDatabase {
 	constructor () {
@@ -126,7 +126,8 @@ class VideoDatabase extends AbstractDatabase {
 				}
 			}
 			catch (error) {
-				logging.error(error);
+				pino.error('Error in VideoDatabase.deleteVideo');
+				pino.error(error);
 				throw error;
 			}
 		}

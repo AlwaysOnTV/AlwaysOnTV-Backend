@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import Config from '~/utils/config.js';
 import Utils from '~/utils/index.js';
-import logging from '~/utils/logging.js';
+import pino from '~/utils/pino.js';
 
 class Twitch {
 	async getTwitchInfo (access_token) {
@@ -20,7 +20,8 @@ class Twitch {
 			return json?.data[0];
 		}
 		catch (error) {
-			logging.error(error);
+			pino.error('Error in Twitch.getTwitchInfo');
+			pino.error(error);
 			throw error;
 		}
 	}
@@ -80,9 +81,8 @@ class Twitch {
 			return new_access_token;
 		}
 		catch (error) {
-			logging.error('There was an error in updating the Twitch token');
-			logging.error(error);
-			logging.error();
+			pino.error('Error in Twitch.getAccessToken');
+			pino.error(error);
 			throw error;
 		}
 	}
@@ -109,7 +109,8 @@ class Twitch {
 			return json.data;
 		}
 		catch (error) {
-			logging.error(error);
+			pino.error('Error in Twitch.getGameByData');
+			pino.error(error);
 			throw error;
 		}
 	}
@@ -126,7 +127,8 @@ class Twitch {
 			if (!client_id || !access_token || !broadcaster_id) {
 				const error = new Error('No valid client_id, access token or broadcaster ID found.');
 				
-				logging.error(error);
+				pino.error('Error in Twitch.updateChannelInformation');
+				pino.error(error);
 				throw error;
 			}
 
@@ -147,7 +149,8 @@ class Twitch {
 			return json;
 		}
 		catch (error) {
-			logging.error(error);
+			pino.error('Error in Twitch.updateChannelInformation');
+			pino.error(error);
 			throw error;
 		}
 	}

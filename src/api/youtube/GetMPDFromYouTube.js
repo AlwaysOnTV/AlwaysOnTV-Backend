@@ -2,6 +2,7 @@ import Joi from 'joi';
 
 import AbstractEndpoint from '~/api/AbstractEndpoint.js';
 import Config from '~/utils/config.js';
+import pino from '~/utils/pino.js';
 import YTDL from '~/utils/ytdl.js';
 
 class GetMPDFromYouTube extends AbstractEndpoint {
@@ -37,7 +38,8 @@ class GetMPDFromYouTube extends AbstractEndpoint {
 			return next();
 		}
 		catch (error) {
-			console.log(error);
+			pino.error('Error in GetMPDFromYouTube.getMPDFromYouTube');
+			pino.log(error);
 			return super.error(ctx, error);
 		}
 	}

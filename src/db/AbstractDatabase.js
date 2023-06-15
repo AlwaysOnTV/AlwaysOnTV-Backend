@@ -1,4 +1,4 @@
-import logging from '~/utils/logging.js';
+import pino from '~/utils/pino.js';
 
 export default class AbstractDatabase {
 	constructor (table_name) {
@@ -35,7 +35,8 @@ export default class AbstractDatabase {
 			return result[0];
 		}
 		catch (error) {
-			logging.error(error);
+			pino.error('Error in AbstractDatabase.insert');
+			pino.error(error);
 			throw error;
 		}
 	}
@@ -49,7 +50,8 @@ export default class AbstractDatabase {
 			return true;
 		}
 		catch (error) {
-			logging.error(error);
+			pino.error('Error in AbstractDatabase.update');
+			pino.error(error);
 			throw error;
 		}
 	}
@@ -63,7 +65,8 @@ export default class AbstractDatabase {
 			return true;
 		}
 		catch (error) {
-			logging.error(error);
+			pino.error('Error in AbstractDatabase.delete');
+			pino.error(error);
 			throw error;
 		}
 	}

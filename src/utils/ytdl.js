@@ -171,8 +171,6 @@ class YTDL {
 	async getDashMPD (youtubeID, videoQuality = 1080) {
 		const { video, audio, duration } = await this.getBestVideoAndAudio(youtubeID, videoQuality);
 
-		// console.log(video, audio, duration);
-
 		const api_url = (await Config.getConfig()).server.api_url;
 
 		video.url = `${api_url}/youtube/${youtubeID}/video`;
