@@ -6,7 +6,6 @@ import Config from '~/utils/config.js';
 import Utils from '~/utils/index.js';
 import YTDL from '~/utils/ytdl.js';
 
-
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 class GetProxiedStreamType extends AbstractEndpoint {
@@ -22,6 +21,10 @@ class GetProxiedStreamType extends AbstractEndpoint {
 		});
 
 		this.is_fetching = {};
+	}
+
+	clearCache () {
+		this.cache.flushAll();
 	}
 
 	isCached (videoId) {
@@ -117,4 +120,9 @@ class GetProxiedStreamType extends AbstractEndpoint {
 	}
 }
 
-export default new GetProxiedStreamType().middlewares();
+const getProxiedStreamType = new GetProxiedStreamType();
+
+export default getProxiedStreamType.middlewares();
+export function clearCache () {
+	getProxiedStreamType.clearCache();
+}

@@ -8,8 +8,8 @@ export default function setup (server) {
 	});
 
 	io.on('connection', (socket) => {
-		socket.on('time_update', (msg) => {
-			socket.broadcast.emit('time_update_dashboard', msg);
+		socket.on('playback_update', (msg) => {
+			socket.broadcast.emit('update_dashboard', msg);
 		});
 
 		socket.on('set_video_time', value => {

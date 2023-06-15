@@ -21,7 +21,6 @@ class Config {
 				expires_at: 0,
 				channel_id: '',
 			},
-			// TODO: allow configuring this
 			max_video_quality: 1080,
 			use_random_playlist: true,
 		};
@@ -126,6 +125,15 @@ class Config {
 		this.config.use_random_playlist = use_random_playlist ?? this.config.use_random_playlist;
 
 		await this.saveConfig();
+	}
+
+	async updateMaxVideoQuality (max_video_quality) {
+		this.config.max_video_quality = max_video_quality ?? this.config.max_video_quality;
+
+		await this.saveConfig();
+
+		const { clearCache } = await import('~/api/youtube/GetProxiedStreamType.js');
+		clearCache();
 	}
 
 	async updateTwitchData ({ access_token, refresh_token, expires_at }, twitch_data) {
