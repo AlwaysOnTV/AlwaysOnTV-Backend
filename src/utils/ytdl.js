@@ -11,12 +11,11 @@ import Config from '~/utils/config.js';
 class YTDL {
 	constructor () {
 		this.info_cache = new NodeCache({
-			stdTTL: 60 * 60 * 2, // 2 hours
-			// stdTTL: 60, // 1 minute
+			stdTTL: 60 * 60 * 3, // 3 hours
 		});
 
 		this.stream_cache = new NodeCache({
-			stdTTL: 60 * 60, // 1 hour
+			stdTTL: 60 * 60 * 3, // 3 hours
 		});
 
 		this.session = false;
@@ -26,11 +25,7 @@ class YTDL {
 		if (this.info_cache.has(youtubeID) && !force) 
 			return this.info_cache.get(youtubeID);
 
-		const info = await ytdl.getInfo(youtubeID, {
-			headers: {
-				'Cache-Control': 'no-store',
-			},
-		});
+		const info = await ytdl.getInfo(youtubeID);
 		
 		this.info_cache.set(youtubeID, info);
 
@@ -62,13 +57,6 @@ class YTDL {
 			}) : [],
 		};
 	}
-
-	// TODO: Cache YTInfo for ~5h with node-cache
-	// When we try to get it from the cache, we check if it is expired
-	// (but not deleted obviously since it's still valid for another hour)
-	// We then do a *single* request to update the URLs
-	// Once we have that, we will simply update the cache again
-	// --- Repeat every ~5h ---
 
 	mergeFormats (video) {
 		const audioFormats = [];
@@ -110,16 +98,10 @@ class YTDL {
 		if (this.stream_cache.has(youtubeID) && !force) 
 			return this.stream_cache.get(youtubeID);
 
-		// if (!this.session) {
-		// 	this.session = new ytcog.Session();
-		// 	await this.session.fetch();
-		// }
-
 		const session = new ytcog.Session();
 		await session.fetch();
 
 		const video = new ytcog.Video(session, { id: youtubeID });
-		// const video = new ytcog.Video(this.session, { id: youtubeID });
 		await video.fetch();
 	
 		if (!video.formats.length) {
