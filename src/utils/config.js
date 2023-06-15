@@ -132,9 +132,6 @@ class Config {
 		this.config.max_video_quality = max_video_quality ?? this.config.max_video_quality;
 
 		await this.saveConfig();
-
-		const { clearCache } = await import('~/api/youtube/GetProxiedStreamType.js');
-		clearCache();
 	}
 
 	async updateTwitchData ({ access_token, refresh_token, expires_at }, twitch_data) {

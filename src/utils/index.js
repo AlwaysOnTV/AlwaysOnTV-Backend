@@ -3,8 +3,8 @@ import Config from '~/utils/config.js';
 import pino from '~/utils/pino.js';
 
 class Utils {
-	async proxy (url) {
-		return `${(await Config.getConfig()).server.api_url}/proxy/${url}`;
+	proxy (url) {
+		return `${Config.getCachedConfig().server.api_url}/proxy/${url}`;
 	}
 	
 	async sleep (ms) {

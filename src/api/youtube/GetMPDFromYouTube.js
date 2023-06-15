@@ -39,7 +39,7 @@ class GetMPDFromYouTube extends AbstractEndpoint {
 		}
 		catch (error) {
 			pino.error('Error in GetMPDFromYouTube.getMPDFromYouTube');
-			pino.log(error);
+			pino.error(error);
 			return super.error(ctx, error);
 		}
 	}

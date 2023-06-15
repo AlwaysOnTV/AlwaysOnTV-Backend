@@ -173,8 +173,8 @@ class YTDL {
 
 		const api_url = (await Config.getConfig()).server.api_url;
 
-		video.url = `${api_url}/youtube/${youtubeID}/video`;
-		audio.url = `${api_url}/youtube/${youtubeID}/audio`;
+		video.url = `${api_url}/youtube/${youtubeID}/video?videoQuality=${videoQuality}`;
+		audio.url = `${api_url}/youtube/${youtubeID}/audio?videoQuality=${videoQuality}`;
 
 		return ytDashManifestGenerator.generate_dash_file_from_formats([video, audio], duration);
 	}
