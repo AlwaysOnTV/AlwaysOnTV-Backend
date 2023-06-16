@@ -12,6 +12,9 @@ class VideoQueue extends AbstractQueue {
 		super('./queue.json');
 	}
 
+	// TODO: Restructure. "current_video" should always be the CURRENT video.
+	// "queue_items" or whatever should be all the queued videos
+
 	async updateChannelInformation (video) {
 		try {
 			await Twitch.updateChannelInformation({ 
@@ -70,6 +73,7 @@ class VideoQueue extends AbstractQueue {
 		return first;
 	}
 
+	// TODO: This needs adding to the history
 	async advanceQueue () {
 		let nextVideo = await super.advanceQueue();
 
