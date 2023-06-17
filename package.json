@@ -3,7 +3,9 @@
 	"version": "1.0.2",
 	"description": "",
 	"type": "module",
-	"exports": "./index.js",
+	"exports": {
+		"./knexfile.js": "./knexfile.js"
+	},
 	"engines": {
 		"node": ">=18.16 <20.0 || >=20.3"
 	},
@@ -24,7 +26,6 @@
 		"@koa/router": "^12.0.0",
 		"better-sqlite3": "^8.4.0",
 		"chalk": "^5.2.0",
-		"dayjs": "^1.11.7",
 		"got": "^12.6.0",
 		"grant": "^5.4.21",
 		"grant-koa": "^5.4.8",
@@ -42,6 +43,8 @@
 		"koa-session": "^6.4.0",
 		"koa-static": "^5.0.0",
 		"link-module-alias": "^1.2.0",
+		"lowdb": "^6.0.1",
+		"luxon": "^3.3.0",
 		"node-cache": "^5.1.2",
 		"pino": "^8.14.1",
 		"pino-pretty": "^10.0.0",
@@ -53,9 +56,11 @@
 		"eslint": "^8.41.0"
 	},
 	"imports": {
+		"~root/*": "./*.js",
 		"~/*": "./src/*.js"
 	},
 	"_moduleAliases": {
+		"~root": ".",
 		"~": "src"
 	}
 }

@@ -6,14 +6,19 @@ import HistoryQueue from '~/queue/HistoryQueue.js';
 import ytdl from '~/utils/ytdl.js';
 import { io } from '~/socket.js';
 import pino from '~/utils/pino.js';
+import VideoDatabase from '~/db/VideoDatabase.js';
 
 class VideoQueue extends AbstractQueue {
 	constructor () {
 		super('./queue.json');
 	}
 
-	// TODO: Restructure. "current_video" should always be the CURRENT video.
-	// "queue_items" or whatever should be all the queued videos
+	getDefaultData () {
+		return {
+			current_video: {},
+			items: [],
+		};
+	}
 
 	async updateChannelInformation (video) {
 		try {
@@ -28,54 +33,45 @@ class VideoQueue extends AbstractQueue {
 		}
 	}
 
+	getCurrentVideo () {
+		return this.db.data.current_video;
+	}
+	
+	hasCurrentVideo () {
+		return !!this.getCurrentVideo().id;
+	}
+
+	async updateCurrentVideo (video) {
+		this.db.data.current_video = video;
+
+		await this.db.write();
+
+		await HistoryQueue.addFirst(video);
+
+		await this.updateChannelInformation(video);
+	}
+
 	async add (elements, skipUpdate = false) {
-		let wasEmpty = false;
-		if (!this.queue.length) {
-			wasEmpty = true;
+		const wasEmpty = !this.hasItems();
+
+		await super.add(elements);
+
+		if (!this.hasCurrentVideo() && wasEmpty && !skipUpdate) {
+			const currentVideo = await this.getAndAdvance();
+
+			await this.updateCurrentVideo(currentVideo);
 		}
 
-		const results = await super.add(elements);
-
-		if (wasEmpty && !skipUpdate) {
-			const currentVideo = await this.getFirst();
-
-			await HistoryQueue.addFirst(currentVideo);
-
-			await this.updateChannelInformation(currentVideo);
-		}
-
-		return results;
+		return this.db.data;
 	}
 	
 	async getRandomVideo () {
 		return RandomPlaylistDatabase.getRandomVideo();
 	}
 
-	async getFirst () {
-		const first = await super.getFirst();
-
-		const { use_random_playlist } = await Config.getConfig();
-
-		if (!first && use_random_playlist) {
-			const randomVideo = await this.getRandomVideo();
-			
-			if (randomVideo) {
-				await this.add(randomVideo);
-
-				return this.getFirst();
-			}
-		}
-
-		if (!(await this.isVideoValid(first))) {
-			return this.advanceQueue();
-		}
-
-		return first;
-	}
-
-	// TODO: This needs adding to the history
+	// TODO: This can deadlock if only age-restricted videos are in the random playlist
 	async advanceQueue () {
-		let nextVideo = await super.advanceQueue();
+		let nextVideo = await super.getAndAdvance();
 
 		const { use_random_playlist } = await Config.getConfig();
 
@@ -83,8 +79,6 @@ class VideoQueue extends AbstractQueue {
 			const randomVideo = await this.getRandomVideo();
 			
 			if (randomVideo) {
-				await this.add(randomVideo);
-
 				nextVideo = randomVideo;
 			}
 		}
@@ -93,9 +87,10 @@ class VideoQueue extends AbstractQueue {
 			return this.advanceQueue();
 		}
 
-		if (nextVideo) {
-			await this.updateChannelInformation(nextVideo);
-		}
+		// v1.1.0 update patch, will be removed in a newer version. Maybe v1.2.0
+		nextVideo.length = await VideoDatabase.updateVideoLength(nextVideo.id);
+
+		await this.updateCurrentVideo(nextVideo);
 
 		io.emit('next_video');
 

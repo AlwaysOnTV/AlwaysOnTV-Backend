@@ -27,11 +27,8 @@ class DeleteVideoFromQueue extends AbstractEndpoint {
 			const index = ctx.index;
 
 			const result = await VideoQueue.remove(index);
-			if (!Array.isArray(result)) {
-				return super.error(ctx, result);
-			}
 
-			return super.success(ctx, next);
+			return super.success(ctx, next, result);
 		}
 		catch (error) {
 			return super.error(ctx, error);

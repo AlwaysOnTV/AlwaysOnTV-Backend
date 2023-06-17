@@ -30,6 +30,7 @@ class GetVideoFromYouTube extends AbstractEndpoint {
 				id: data.videoDetails.videoId,
 				title: data.videoDetails.title,
 				thumbnail_url: data.videoDetails.thumbnails?.reverse()[0]?.url,
+				length: data.videoDetails.lengthSeconds,
 				age_restricted: data.videoDetails.age_restricted,
 			};
 	

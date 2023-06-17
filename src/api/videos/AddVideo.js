@@ -46,6 +46,7 @@ class AddVideo extends AbstractEndpoint {
 				title: data.videoDetails.title,
 				gameId,
 				thumbnail_url: data.videoDetails.thumbnails?.reverse()[0]?.url,
+				length: data.videoDetails.lengthSeconds,
 			};
 		
 			if ((await VideoDatabase.getByID(dbData.id))) {

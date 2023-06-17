@@ -87,6 +87,7 @@ class PlaylistDatabase extends AbstractDatabase {
 									id: video.id,
 									title: video.title,
 									thumbnail_url: video.thumbnail_url,
+									length: video.length,
 									gameId,
 								});
 
@@ -194,6 +195,7 @@ class PlaylistDatabase extends AbstractDatabase {
 				'videos.title as videos:title',
 				'videos.thumbnail_url as videos:thumbnail_url',
 				'videos.gameId as videos:gameId',
+				'videos.length as videos:length',
 				'playlist_videos.index as videos:index',
 				'games.id as games:id',
 				'games.title as games:title',
@@ -237,6 +239,7 @@ class PlaylistDatabase extends AbstractDatabase {
 				id: row['videos:id'],
 				title: row['videos:title'],
 				thumbnail_url: row['videos:thumbnail_url'],
+				length: row['videos:length'],
 				gameId: row['videos:gameId'],
 			};
 

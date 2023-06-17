@@ -9,7 +9,7 @@ class GetQueue extends AbstractEndpoint {
 
 	async getQueue (ctx, next) {
 		try {
-			return super.success(ctx, next, await VideoQueue.getAll());
+			return super.success(ctx, next, VideoQueue.getData());
 		}
 		catch (error) {
 			return super.error(ctx, error);

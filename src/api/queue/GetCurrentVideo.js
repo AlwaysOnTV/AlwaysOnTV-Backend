@@ -10,7 +10,7 @@ class GetCurrentVideo extends AbstractEndpoint {
 
 	async getCurrentVideo (ctx, next) {
 		try {
-			const video = await VideoQueue.getFirst();
+			const video = VideoQueue.getCurrentVideo();
 
 			if (!video) {
 				return super.error(ctx, 'No items in the queue');

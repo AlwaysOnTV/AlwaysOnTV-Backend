@@ -1,6 +1,7 @@
 import AbstractDatabase from './AbstractDatabase.js';
 import PlaylistVideoDatabase from '~/db/PlaylistVideoDatabase.js';
 import pino from '~/utils/pino.js';
+import ytdl from '~/utils/ytdl.js';
 
 class VideoDatabase extends AbstractDatabase {
 	constructor () {
@@ -27,12 +28,22 @@ class VideoDatabase extends AbstractDatabase {
 				.comment('Game Reference');
 
 			table.string('thumbnail_url').notNullable().defaultTo(null).comment('YouTube Thumbnail URL');
+
+			table.integer('length').notNullable().defaultTo(0).comment('Video Length In Seconds');
 		});
 	}
 
 	async getAllVideos (orderBy = 'asc') {
 		return this.getKnex()
-			.select('videos.id', 'videos.created_at', 'videos.title', 'videos.thumbnail_url', 'games.id as gameId', 'games.title as gameTitle')
+			.select(
+				'videos.id',
+				'videos.created_at',
+				'videos.title',
+				'videos.thumbnail_url',
+				'videos.length',
+				'games.id as gameId',
+				'games.title as gameTitle',
+			)
 			.join('games', 'videos.gameId', 'games.id')
 			.orderBy('videos.created_at', orderBy);
 	}
@@ -41,7 +52,14 @@ class VideoDatabase extends AbstractDatabase {
 		if (!id) return false;
 
 		const result = await this.getKnex()
-			.select('videos.id', 'videos.title', 'videos.thumbnail_url', 'games.id as gameId', 'games.title as gameTitle')
+			.select(
+				'videos.id',
+				'videos.title',
+				'videos.thumbnail_url',
+				'videos.length',
+				'games.id as gameId',
+				'games.title as gameTitle',
+			)
 			.join('games', 'videos.gameId', 'games.id')
 			.where('videos.id', id)
 			.first();
@@ -135,6 +153,26 @@ class VideoDatabase extends AbstractDatabase {
 		return this.delete({
 			id,
 		});
+	}
+
+	// v1.1.0 update patch, will be removed in a newer version. Maybe v1.2.0
+	async updateVideoLength (id) {
+		if (!id) return 0;
+
+		const video = await super.getByID(id);
+		if (!video || video.length) return 0;
+
+		const data = await ytdl.getVideoInfo(id);
+
+		const length = data.videoDetails.lengthSeconds;
+
+		await this.update({
+			id,
+		}, {
+			length,
+		});
+
+		return length;
 	}
 }
 

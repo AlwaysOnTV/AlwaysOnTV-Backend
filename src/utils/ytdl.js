@@ -7,6 +7,7 @@ import { addFormatMeta } from '@distube/ytdl-core/lib/format-utils.js';
 import ytDashManifestGenerator from '@freetube/yt-dash-manifest-generator';
 import NodeCache from 'node-cache';
 import Config from '~/utils/config.js';
+import { DateTime, Duration } from 'luxon';
 
 class YTDL {
 	constructor () {
@@ -38,6 +39,16 @@ class YTDL {
 		});
 	}
 
+	durationStringToSeconds (durationString) {
+		const duration = DateTime.fromFormat(durationString, 'H:m:s');
+
+		return Duration.fromObject({
+			hours: duration.hour,
+			minutes: duration.minute,
+			seconds: duration.second,
+		}).as('seconds');
+	}
+
 	async getPlaylist (playlistID, withVideos = true) {
 		if (!playlistID || !ytpl.validateID(playlistID)) return false;
 
@@ -53,6 +64,7 @@ class YTDL {
 					id: video.id,
 					title: video.title,
 					thumbnail_url: video.thumbnail,
+					length: this.durationStringToSeconds(video.duration),
 				};
 			}) : [],
 		};

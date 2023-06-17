@@ -1,4 +1,4 @@
-import dayjs from 'dayjs';
+import { DateTime } from 'luxon';
 import Config from '~/utils/config.js';
 import Utils from '~/utils/index.js';
 import pino from '~/utils/pino.js';
@@ -39,12 +39,12 @@ class Twitch {
 	}
 
 	async updateTwitchData (access_token, refresh_token, expires_in) {
-		const expires_at = dayjs().add(expires_in, 'seconds');
+		const expires_at = DateTime.now().plus({ seconds: expires_in });
 
 		await Config.updateTwitchData({
 			access_token,
 			refresh_token,
-			expires_at,
+			expires_at: expires_at.toISO(),
 		}, await this.getTwitchInfo(access_token));
 	}
 
@@ -53,7 +53,10 @@ class Twitch {
 
 		if (!access_token || !refresh_token || !expires_at || !client_id || !client_secret) return null;
 
-		if (dayjs().isBefore(expires_at) && !force_renew) return access_token;
+		if (DateTime.now() < DateTime.fromISO(expires_at) && !force_renew)
+			return access_token;
+
+		pino.info('Renewing access token because it expired...');
 
 		try {
 			const url = new URL('https://id.twitch.tv/oauth2/token');
