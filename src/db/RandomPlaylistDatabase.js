@@ -117,22 +117,22 @@ class RandomPlaylistDatabase extends AbstractDatabase {
 
 			const existingVideoIds = existingVideos.map((video) => video.videoId);
 			const videosToInsert = videoIds.filter((videoId) => !existingVideoIds.includes(videoId));
-				
+
 			// Check if videosToInsert exist in the 'videos' table
 			const videosExist = await trx('videos')
 				.whereIn('id', videosToInsert)
 				.select('id');
-			
+
 			const existingVideoIdsFromVideosTable = videosExist.map((video) => video.id);
 			const videosToInsertFinal = videosToInsert.filter((videoId) => existingVideoIdsFromVideosTable.includes(videoId));
-		
+
 			if (videosToInsertFinal.length > 0) {
 				// Insert the new videos
 				await trx(this.table_name).insert(videosToInsertFinal.map((videoId) => ({ videoId })));
 			}
 
 			data.inserted = videosToInsertFinal;
-			data.failed = videoIds.filter((videoId) => !videosToInsertFinal.includes(videoId));	
+			data.failed = videoIds.filter((videoId) => !videosToInsertFinal.includes(videoId));
 		});
 
 		return data;

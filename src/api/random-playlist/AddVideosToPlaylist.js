@@ -20,9 +20,9 @@ class AddVideosToPlaylist extends AbstractEndpoint {
 	}
 
 	async addVideosToPlaylist (ctx, next) {
-		try {	
+		try {
 			const { videoIds } = ctx.request.body;
-			
+
 			const data = await RandomPlaylistDatabase.addVideos(videoIds);
 
 			return super.success(ctx, next, data);

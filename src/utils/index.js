@@ -6,7 +6,7 @@ class Utils {
 	proxy (url) {
 		return `${Config.getCachedConfig().server.api_url}/proxy/${url}`;
 	}
-	
+
 	async sleep (ms) {
 		return new Promise(r => setTimeout(r, ms));
 	}

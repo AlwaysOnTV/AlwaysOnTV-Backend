@@ -23,11 +23,11 @@ class YTDL {
 	}
 
 	async getVideoInfo (youtubeID, force = false) {
-		if (this.info_cache.has(youtubeID) && !force) 
+		if (this.info_cache.has(youtubeID) && !force)
 			return this.info_cache.get(youtubeID);
 
 		const info = await ytdl.getInfo(youtubeID);
-		
+
 		this.info_cache.set(youtubeID, info);
 
 		return info;
@@ -107,7 +107,7 @@ class YTDL {
 	}
 
 	async getVideoAndAudioStreams (youtubeID, force = false) {
-		if (this.stream_cache.has(youtubeID) && !force) 
+		if (this.stream_cache.has(youtubeID) && !force)
 			return this.stream_cache.get(youtubeID);
 
 		const session = new ytcog.Session();
@@ -115,18 +115,18 @@ class YTDL {
 
 		const video = new ytcog.Video(session, { id: youtubeID });
 		await video.fetch();
-	
+
 		if (!video.formats.length) {
 			return {
 				error: 'possibly_age_restricted',
 			};
 		}
-	
+
 		const cache_data = {
 			...this.mergeFormats(video),
 			duration: video.duration,
 		};
-		
+
 		this.stream_cache.set(youtubeID, cache_data);
 
 		return cache_data;
@@ -149,7 +149,7 @@ class YTDL {
 				return true;
 			},
 		});
-		
+
 		const bestAudio = ytdl.chooseFormat(audioFormats, {
 			quality: 'highest',
 			filter: 'audioonly',

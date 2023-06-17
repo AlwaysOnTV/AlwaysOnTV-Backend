@@ -17,7 +17,7 @@ class PlaylistDatabase extends AbstractDatabase {
 			table.increments('id').notNullable().comment('Incremental Playlist ID');
 
 			table.timestamp('created_at').notNullable().defaultTo(this.knex.fn.now()).comment('Playlist Creation Date');
-			
+
 			table.string('title').unique().notNullable().defaultTo(null).comment('Playlist Title');
 		});
 	}
@@ -44,7 +44,7 @@ class PlaylistDatabase extends AbstractDatabase {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param {*} title
 	 * The playlist title
 	 * @param {*} youTubePlaylist
@@ -53,7 +53,7 @@ class PlaylistDatabase extends AbstractDatabase {
 	 * Whether to add videos that aren't in the database yet to the random playlist
 	 * @param {*} gameId
 	 * The game ID for the newly created games - "Always On" by default
-	 * @returns 
+	 * @returns
 	 */
 	async createPlaylist (
 		title,
@@ -79,7 +79,7 @@ class PlaylistDatabase extends AbstractDatabase {
 							.select('id')
 							.where('id', video.id)
 							.first();
-						
+
 						// If we don't have it in the database, add it
 						if (!dbVideo) {
 							await trx('videos')

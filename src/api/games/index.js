@@ -20,9 +20,9 @@ class GameRouter extends AbstractRouter {
 		router.get('/', ...GetAllGames);
 		router.get('/:orderBy', ...GetAllGames);
 		router.put('/', ...AddGame);
-			
+
 		router.post('/name', ...GetGamesByName);
-			
+
 		router.get('/id/:id', ...GetGameByID);
 		router.post('/id/:id', ...UpdateGameByID);
 		router.post('/id/:id/delete', ...DeleteGameByID);

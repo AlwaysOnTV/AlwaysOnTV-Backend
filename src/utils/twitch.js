@@ -129,7 +129,7 @@ class Twitch {
 
 			if (!client_id || !access_token || !broadcaster_id) {
 				const error = new Error('No valid client_id, access token or broadcaster ID found.');
-				
+
 				pino.error('Error in Twitch.updateChannelInformation');
 				pino.error(error);
 				throw error;

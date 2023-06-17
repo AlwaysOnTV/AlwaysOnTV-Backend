@@ -25,7 +25,7 @@ class GetVideoFromYouTube extends AbstractEndpoint {
 			if (all) {
 				return super.success(ctx, next, data);
 			}
-		
+
 			const ytdlData = {
 				id: data.videoDetails.videoId,
 				title: data.videoDetails.title,
@@ -33,7 +33,7 @@ class GetVideoFromYouTube extends AbstractEndpoint {
 				length: data.videoDetails.lengthSeconds,
 				age_restricted: data.videoDetails.age_restricted,
 			};
-	
+
 			return super.success(ctx, next, ytdlData);
 		}
 		catch (error) {

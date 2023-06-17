@@ -20,7 +20,7 @@ class UpdateTwitchInfo extends AbstractEndpoint {
 	async updateTwitchInfo (ctx, next) {
 		try {
 			const { title, game_id } = ctx.request.body;
-			
+
 			const result = await Twitch.updateChannelInformation({ title, game_id });
 
 			if (!result) {

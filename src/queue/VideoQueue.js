@@ -22,7 +22,7 @@ class VideoQueue extends AbstractQueue {
 
 	async updateChannelInformation (video) {
 		try {
-			await Twitch.updateChannelInformation({ 
+			await Twitch.updateChannelInformation({
 				title: video.title,
 				game_id: video.game?.id || video.gameId,
 			});
@@ -36,7 +36,7 @@ class VideoQueue extends AbstractQueue {
 	getCurrentVideo () {
 		return this.db.data.current_video;
 	}
-	
+
 	hasCurrentVideo () {
 		return !!this.getCurrentVideo().id;
 	}
@@ -64,7 +64,7 @@ class VideoQueue extends AbstractQueue {
 
 		return this.db.data;
 	}
-	
+
 	async getRandomVideo () {
 		return RandomPlaylistDatabase.getRandomVideo();
 	}
@@ -77,7 +77,7 @@ class VideoQueue extends AbstractQueue {
 
 		if (!nextVideo && use_random_playlist) {
 			const randomVideo = await this.getRandomVideo();
-			
+
 			if (randomVideo) {
 				nextVideo = randomVideo;
 			}
@@ -99,7 +99,7 @@ class VideoQueue extends AbstractQueue {
 
 	async isVideoValid (video) {
 		const info = await ytdl.getVideoInfo(video.id);
-		
+
 		if (info?.videoDetails?.age_restricted) return false;
 
 		return true;

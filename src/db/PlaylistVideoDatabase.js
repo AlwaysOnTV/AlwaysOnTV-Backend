@@ -70,7 +70,7 @@ class PlaylistDatabase extends AbstractDatabase {
 
 	async addVideoToPlaylist (playlistId, videoId) {
 		if (!playlistId || !videoId) return false;
-		
+
 		const index = (await this.getLatestIndex(playlistId)) + 1;
 
 		await this.insert({
@@ -78,7 +78,7 @@ class PlaylistDatabase extends AbstractDatabase {
 			index,
 			videoId,
 		});
-		
+
 		await this.fixPlaylistPositions(playlistId);
 
 		return true;
@@ -86,7 +86,7 @@ class PlaylistDatabase extends AbstractDatabase {
 
 	async deleteVideoFromPlaylist (playlistId, index) {
 		if (!playlistId || !index) return false;
-		
+
 		if (!(await this.tryGet({ playlistId, index }))) {
 			return false;
 		}

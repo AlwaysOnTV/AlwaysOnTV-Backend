@@ -4,7 +4,7 @@ class SocketData {
 	constructor () {
 		this.current_video_time = 0;
 	}
-	
+
 	getCurrentVideoTime () {
 		return this.current_video_time;
 	}

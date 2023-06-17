@@ -63,7 +63,7 @@ class VideoDatabase extends AbstractDatabase {
 			.join('games', 'videos.gameId', 'games.id')
 			.where('videos.id', id)
 			.first();
-	
+
 		if (result) {
 			const { gameId, gameTitle, ...videoData } = result;
 			const videoWithGame = {
@@ -117,12 +117,11 @@ class VideoDatabase extends AbstractDatabase {
 			try {
 				let playlists = false;
 
-				await this.knex.transaction(async trx => {					
+				await this.knex.transaction(async trx => {
 					// Remove video from random playlist
 					await trx('random_playlist')
 						.where('videoId', id)
 						.del();
-					
 
 					// Get all playlist IDs that have this video
 					playlists = await trx('playlist_videos')

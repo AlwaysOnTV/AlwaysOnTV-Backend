@@ -18,12 +18,12 @@ class QueueRouter extends AbstractRouter {
 		super.setupRouter(router);
 
 		router.use(checkPassword);
-		
+
 		router.get('/', ...GetQueue);
 		router.post('/', ...UpdateQueue);
 		router.delete('/', ...ClearQueue);
 		router.delete('/:index', ...DeleteVideoFromQueue);
-			
+
 		router.put('/video', ...AddVideoToQueue);
 		router.put('/playlist', ...AddPlaylistToQueue);
 

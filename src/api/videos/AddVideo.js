@@ -40,7 +40,7 @@ class AddVideo extends AbstractEndpoint {
 			const { videoId, gameId, addToRandomPlaylist } = ctx.request.body;
 
 			const data = await YTDL.getVideoInfo(videoId);
-	
+
 			const dbData = {
 				id: data.videoDetails.videoId,
 				title: data.videoDetails.title,
@@ -48,7 +48,7 @@ class AddVideo extends AbstractEndpoint {
 				thumbnail_url: data.videoDetails.thumbnails?.reverse()[0]?.url,
 				length: data.videoDetails.lengthSeconds,
 			};
-		
+
 			if ((await VideoDatabase.getByID(dbData.id))) {
 				return super.error(ctx, `Video with ID ${dbData.id} already exists`);
 			}

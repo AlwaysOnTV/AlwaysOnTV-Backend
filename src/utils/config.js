@@ -139,7 +139,7 @@ class Config {
 		this.config.twitch.refresh_token = refresh_token ?? this.config.twitch.refresh_token;
 		this.config.twitch.expires_at = expires_at ?? this.config.twitch.expires_at;
 		this.config.twitch.data = twitch_data ?? this.config.twitch.data;
-		
+
 		await this.saveConfig();
 	}
 }

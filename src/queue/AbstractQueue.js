@@ -8,7 +8,7 @@ export default class AbstractQueue {
 		this.maxLength = maxLength;
 
 		const adapter = new JSONFile(path);
-		
+
 		this.db = new Low(adapter, this.getDefaultData());
 		this.db.read();
 	}
@@ -45,7 +45,7 @@ export default class AbstractQueue {
 			pino.error(`Index: ${index}`);
 			return false;
 		}
-		
+
 		return items[index];
 	}
 
@@ -107,7 +107,7 @@ export default class AbstractQueue {
 
 		index = Math.min(Math.max(index, 0), items.length - 1);
 		newIndex = Math.min(Math.max(newIndex, 0), items.length - 1);
-		
+
 		if (index === newIndex) {
 			return 'index matches newIndex';
 		}

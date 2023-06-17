@@ -20,7 +20,7 @@ class GetGamesByName extends AbstractEndpoint {
 	async getGamesByName (ctx, next) {
 		try {
 			const { title } = ctx.request.body;
-			
+
 			return super.success(ctx, next, await GameDatabase.getGamesByName(title));
 		}
 		catch (error) {

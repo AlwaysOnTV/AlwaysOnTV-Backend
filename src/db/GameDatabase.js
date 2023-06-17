@@ -15,7 +15,7 @@ class GameDatabase extends AbstractDatabase {
 			table.string('id').primary().notNullable().defaultTo(null).comment('Twitch Game ID');
 
 			table.timestamp('created_at').notNullable().defaultTo(this.knex.fn.now()).comment('Game Creation Date');
-			
+
 			table.string('title').notNullable().defaultTo(null).comment('Twitch Game Title');
 
 			table.string('thumbnail_url').notNullable().defaultTo(null).comment('Game Thumbnail URL');

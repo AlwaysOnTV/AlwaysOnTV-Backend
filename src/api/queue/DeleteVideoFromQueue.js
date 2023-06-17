@@ -10,7 +10,7 @@ class DeleteVideoFromQueue extends AbstractEndpoint {
 
 	async checkIndex (ctx, next) {
 		const { index } = ctx.params;
-			
+
 		const parsedIndex = parseInt(index, 10);
 
 		if (!Number.isFinite(parsedIndex)) {

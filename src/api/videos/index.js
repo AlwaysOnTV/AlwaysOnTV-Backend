@@ -21,7 +21,7 @@ class VideoRouter extends AbstractRouter {
 		router.get('/:orderBy', ...GetAllVideos);
 
 		router.put('/', ...AddVideo);
-			
+
 		router.get('/id/:id', ...GetVideoByID);
 		router.post('/id/:id', ...UpdateVideoByID);
 		router.post('/id/:id/delete', ...DeleteVideoByID);

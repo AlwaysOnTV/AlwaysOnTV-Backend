@@ -57,10 +57,10 @@ class ProxyRequest extends AbstractEndpoint {
 		const data = got.stream(url, { headers }).on('error', async error => {
 			pino.error('Error in ProxyRequest.proxyRequest .. got.stream');
 			pino.error(error);
-			
+
 			return super.error(ctx, error, 500);
 		});
-		
+
 		ctx.body = data;
 
 		return next();
