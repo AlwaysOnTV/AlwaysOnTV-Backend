@@ -1,4 +1,6 @@
 import { Server } from 'socket.io';
+import HistoryQueue from '~/queue/HistoryQueue.js';
+import VideoQueue from '~/queue/VideoQueue.js';
 
 class SocketData {
 	constructor () {
@@ -30,16 +32,19 @@ export default function setup (server) {
 	io.on('connection', (socket) => {
 		socket.on('playback_update', (msg) => {
 			socketData.setCurrentVideoTime(msg.time);
+
 			socket.broadcast.emit('update_dashboard', msg);
 		});
 
 		socket.on('set_video_time', time => {
 			socketData.setCurrentVideoTime(time);
+
 			socket.broadcast.emit('set_video_time', time);
 		});
 
 		socket.on('skip_video', () => {
 			socketData.resetCurrentVideoTime();
+
 			socket.broadcast.emit('skip_video');
 		});
 
@@ -52,9 +57,14 @@ export default function setup (server) {
 		});
 
 		socket.on('request_video_time', () => {
-			io.emit('request_video_time', socketData.getCurrentVideoTime());
+			socket.emit('request_video_time', socketData.getCurrentVideoTime());
 		});
 
-		// TODO: Queue video, or update anything for the queue or history => socket event
+		socket.on('queue_history_update', () => {
+			io.emit('queue_history_update', {
+				queue: VideoQueue.getData(),
+				history: HistoryQueue.getData(),
+			});
+		});
 	});
 }

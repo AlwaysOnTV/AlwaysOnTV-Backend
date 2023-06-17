@@ -63,6 +63,8 @@ export default class AbstractQueue {
 		const items = this.getAll();
 		items.push(...elements);
 
+		this.limitLength();
+
 		await this.db.write();
 
 		return this.db.data;
@@ -73,6 +75,8 @@ export default class AbstractQueue {
 
 		const items = this.getAll();
 		items.unshift(...elements);
+
+		this.limitLength();
 
 		await this.db.write();
 

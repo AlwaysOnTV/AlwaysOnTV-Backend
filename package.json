@@ -11,7 +11,8 @@
 	},
 	"scripts": {
 		"start": "node index.js",
-		"postinstall": "link-module-alias"
+		"postinstall": "link-module-alias",
+		"migrate": "knex migrate:latest"
 	},
 	"keywords": [],
 	"author": "AlwaysOnTV",
