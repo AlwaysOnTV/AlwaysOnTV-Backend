@@ -7,7 +7,7 @@ import { addFormatMeta } from '@distube/ytdl-core/lib/format-utils.js';
 import ytDashManifestGenerator from '@freetube/yt-dash-manifest-generator';
 import NodeCache from 'node-cache';
 import Config from '~/utils/config.js';
-import { DateTime, Duration } from 'luxon';
+import { Duration } from 'luxon';
 
 class YTDL {
 	constructor () {
@@ -40,12 +40,12 @@ class YTDL {
 	}
 
 	durationStringToSeconds (durationString) {
-		const duration = DateTime.fromFormat(durationString, 'H:m:s');
+		const split = durationString.split(':').reverse();
 
 		return Duration.fromObject({
-			hours: duration.hour,
-			minutes: duration.minute,
-			seconds: duration.second,
+			hours: split[2] || 0,
+			minutes: split[1] || 0,
+			seconds: split[0] || 0,
 		}).as('seconds');
 	}
 

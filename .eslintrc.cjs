@@ -47,5 +47,11 @@ module.exports = {
 				'maxEOF': 0,
 			},
 		],
+		'no-empty': [
+			'error',
+			{
+				'allowEmptyCatch': true,
+			},
+		],
 	},
 };

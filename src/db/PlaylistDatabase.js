@@ -76,7 +76,7 @@ class PlaylistDatabase extends AbstractDatabase {
 					for (const video of playlist.videos) {
 						// Fetch the video to see if we already have it in the database
 						const dbVideo = await trx('videos')
-							.select('id')
+							.select('id', 'length')
 							.where('id', video.id)
 							.first();
 
@@ -96,6 +96,12 @@ class PlaylistDatabase extends AbstractDatabase {
 								await trx('random_playlist')
 									.insert({ videoId: video.id });
 							}
+						}
+						// v1.1.0 update patch, will be removed in a newer version. Maybe v1.2.0
+						else if (!dbVideo.length) {
+							await trx('videos')
+								.where({ id: video.id })
+								.update({ length: video.length });
 						}
 
 						// Get the latest index for the playlist
