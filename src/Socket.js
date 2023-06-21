@@ -2,7 +2,7 @@ import { Server } from 'socket.io';
 import HistoryQueue from '~/queue/HistoryQueue.js';
 import VideoQueue from '~/queue/VideoQueue.js';
 
-export class Socket {
+export default class Socket {
 	static {
 		this.io = false;
 
@@ -14,7 +14,7 @@ export class Socket {
 			cors: true,
 		});
 
-		io.on('connection', (socket) => {
+		this.io.on('connection', (socket) => {
 			socket.on('playback_update', (msg) => {
 				this.currentVideoTime = msg.time;
 
@@ -60,7 +60,7 @@ export class Socket {
 	}
 
 	static broadcastQueueHistoryUpdate () {
-		io.emit('queue_history_update', {
+		this.io.emit('queue_history_update', {
 			queue: VideoQueue.getData(),
 			history: HistoryQueue.getData(),
 		});

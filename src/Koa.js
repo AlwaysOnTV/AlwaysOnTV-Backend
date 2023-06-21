@@ -11,7 +11,7 @@ import session from 'koa-session';
 import mount from 'koa-mount';
 import GrantUrismo from '~/Grant.js';
 
-import setupSocket from '~/Socket.js';
+import Socket from '~/Socket.js';
 
 // --- Setup Koa
 
@@ -78,5 +78,5 @@ export default async function start () {
 		pino.info(`Koa server listening on localhost:${port}`);
 	});
 
-	setupSocket(server);
+	Socket.setup(server);
 }

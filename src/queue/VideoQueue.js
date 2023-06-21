@@ -4,7 +4,7 @@ import Twitch from '~/utils/Twitch.js';
 import Config from '~/utils/Config.js';
 import HistoryQueue from '~/queue/HistoryQueue.js';
 import ytdl from '~/utils/YTDL.js';
-import { Socket, io } from '~/Socket.js';
+import Socket, { io } from '~/Socket.js';
 import pino from '~/utils/Pino.js';
 import VideoDatabase from '~/db/VideoDatabase.js';
 
