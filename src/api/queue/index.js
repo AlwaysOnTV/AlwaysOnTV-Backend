@@ -1,6 +1,7 @@
 import AbstractRouter from '~/api/AbstractRouter.js';
 import checkPassword from '~/api/PasswordMiddleware.js';
 import AddPlaylistToQueue from '~/api/queue/AddPlaylistToQueue.js';
+import AddRandomVideosToQueue from '~/api/queue/AddRandomVideosToQueue.js';
 import AddVideoToQueue from '~/api/queue/AddVideoToQueue.js';
 import ClearQueue from '~/api/queue/ClearQueue.js';
 import DeleteVideoFromQueue from '~/api/queue/DeleteVideoFromQueue.js';
@@ -26,6 +27,7 @@ class QueueRouter extends AbstractRouter {
 
 		router.put('/video', ...AddVideoToQueue);
 		router.put('/playlist', ...AddPlaylistToQueue);
+		router.put('/random', ...AddRandomVideosToQueue);
 
 		router.get('/current', ...GetCurrentVideo);
 		router.post('/next', ...GetNextVideo);

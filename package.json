@@ -27,6 +27,7 @@
 		"@koa/router": "^12.0.0",
 		"better-sqlite3": "^8.4.0",
 		"chalk": "^5.2.0",
+		"chokidar": "^3.5.3",
 		"got": "^12.6.0",
 		"grant": "^5.4.21",
 		"grant-koa": "^5.4.8",

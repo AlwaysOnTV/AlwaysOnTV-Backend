@@ -1,4 +1,4 @@
-import pino from '~/utils/pino.js';
+import pino from '~/utils/Pino.js';
 
 import { Low } from 'lowdb';
 import { JSONFile } from 'lowdb/node';
@@ -19,6 +19,8 @@ export default class AbstractQueue {
 		};
 	}
 
+	onQueueChange () {}
+
 	async limitLength () {
 		if (this.maxLength === -1) return;
 
@@ -33,6 +35,8 @@ export default class AbstractQueue {
 		items.length = 0;
 
 		await this.db.write();
+
+		this.onQueueChange();
 
 		return this.db.data;
 	}
@@ -67,6 +71,8 @@ export default class AbstractQueue {
 
 		await this.db.write();
 
+		this.onQueueChange();
+
 		return this.db.data;
 	}
 
@@ -79,6 +85,8 @@ export default class AbstractQueue {
 		this.limitLength();
 
 		await this.db.write();
+
+		this.onQueueChange();
 
 		return this.db.data;
 	}
@@ -95,6 +103,8 @@ export default class AbstractQueue {
 		items.splice(index, 1);
 
 		await this.db.write();
+
+		this.onQueueChange();
 
 		return this.db.data;
 	}
@@ -122,6 +132,8 @@ export default class AbstractQueue {
 
 		await this.db.write();
 
+		this.onQueueChange();
+
 		return this.db.data;
 	}
 
@@ -144,6 +156,8 @@ export default class AbstractQueue {
 
 		await this.db.write();
 
+		this.onQueueChange();
+
 		return result;
 	}
 
@@ -155,6 +169,8 @@ export default class AbstractQueue {
 		items.shift();
 
 		await this.db.write();
+
+		this.onQueueChange();
 
 		return items[0];
 	}

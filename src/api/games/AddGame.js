@@ -2,6 +2,7 @@ import Joi from 'joi';
 
 import AbstractEndpoint from '~/api/AbstractEndpoint.js';
 import GameDatabase from '~/db/GameDatabase.js';
+import Twitch from '~/utils/Twitch.js';
 
 class AddGame extends AbstractEndpoint {
 	setup () {
@@ -12,33 +13,43 @@ class AddGame extends AbstractEndpoint {
 	getSchema () {
 		return Joi.object({
 			body: Joi.object({
-				gameId: Joi.string().required(),
-				title: Joi.string().required(),
-				thumbnail_url: Joi.string().required(),
+				igdbGameId: Joi.string().required(),
 			}),
 		});
 	}
 
 	async checkGame (ctx, next) {
-		const { gameId } = ctx.request.body;
+		const { igdbGameId } = ctx.request.body;
 
-		const game = await GameDatabase.getByID(gameId);
-		if (game) {
-			return super.error(ctx, `Game with ID ${gameId} already exists.`);
+		const twitchGame = await Twitch.getGameByIGDBID(igdbGameId);
+
+		if (!twitchGame) {
+			return super.error(ctx, `Couldn't find a game in the Twitch's database with IGDB ID ${igdbGameId}.`);
 		}
+
+		const game = await GameDatabase.getByID(twitchGame.id);
+		if (game) {
+			return super.error(ctx, `Game with ID ${twitchGame.id} already exists.`);
+		}
+
+		ctx.game = twitchGame;
 
 		return next();
 	}
 
 	async addGame (ctx, next) {
 		try {
-			const { gameId, title, thumbnail_url } = ctx.request.body;
+			const { id, name, box_art_url } = ctx.game;
 
-			return super.success(ctx, next, await GameDatabase.createGame(gameId, title, thumbnail_url));
+			return super.success(ctx, next, await GameDatabase.createGame(id, name, this.normalizeBoxart(box_art_url)));
 		}
 		catch (error) {
 			return super.error(ctx, error);
 		}
+	}
+
+	normalizeBoxart (box_art_url) {
+		return box_art_url.replace('{width}x{height}', '500x700');
 	}
 }
 

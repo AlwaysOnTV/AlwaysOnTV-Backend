@@ -1,6 +1,6 @@
 import Joi from 'joi';
 
-import YTDL from '~/utils/ytdl.js';
+import YTDL from '~/utils/YTDL.js';
 
 import GameDatabase from '~/db/GameDatabase.js';
 import VideoDatabase from '~/db/VideoDatabase.js';

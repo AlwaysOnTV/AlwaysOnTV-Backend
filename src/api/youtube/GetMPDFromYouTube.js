@@ -1,9 +1,9 @@
 import Joi from 'joi';
 
 import AbstractEndpoint from '~/api/AbstractEndpoint.js';
-import Config from '~/utils/config.js';
-import pino from '~/utils/pino.js';
-import YTDL from '~/utils/ytdl.js';
+import Config from '~/utils/Config.js';
+import pino from '~/utils/Pino.js';
+import YTDL from '~/utils/YTDL.js';
 
 class GetMPDFromYouTube extends AbstractEndpoint {
 	setup () {
@@ -15,7 +15,7 @@ class GetMPDFromYouTube extends AbstractEndpoint {
 		return Joi.object({
 			query: Joi.object({
 				videoId: Joi.string().required(),
-				videoQuality: Joi.number().default(Config.getCachedConfig().max_video_quality),
+				videoQuality: Joi.number().default(Config.maxVideoQuality),
 			}),
 		});
 	}
@@ -23,7 +23,7 @@ class GetMPDFromYouTube extends AbstractEndpoint {
 	async getVideoQuality (ctx, next) {
 		const { videoQuality } = ctx.request.query;
 
-		ctx.videoQuality = videoQuality || Config.getCachedConfig().max_video_quality;
+		ctx.videoQuality = videoQuality || Config.maxVideoQuality;
 
 		return next();
 	}

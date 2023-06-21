@@ -6,7 +6,7 @@ import { addFormatMeta } from '@distube/ytdl-core/lib/format-utils.js';
 
 import ytDashManifestGenerator from '@freetube/yt-dash-manifest-generator';
 import NodeCache from 'node-cache';
-import Config from '~/utils/config.js';
+import Config, { ServerConfig } from '~/utils/Config.js';
 import { Duration } from 'luxon';
 
 class YTDL {
@@ -165,7 +165,7 @@ class YTDL {
 	async getDashMPD (youtubeID, videoQuality = 1080) {
 		const { video, audio, duration } = await this.getBestVideoAndAudio(youtubeID, videoQuality);
 
-		const api_url = (await Config.getConfig()).server.api_url;
+		const api_url = ServerConfig.api_url;
 
 		video.url = `${api_url}/youtube/${youtubeID}/video?videoQuality=${videoQuality}`;
 		audio.url = `${api_url}/youtube/${youtubeID}/audio?videoQuality=${videoQuality}`;

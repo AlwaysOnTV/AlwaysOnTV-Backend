@@ -1,6 +1,6 @@
 import AbstractEndpoint from '~/api/AbstractEndpoint.js';
 
-import Config from '~/utils/config.js';
+import Config from '~/utils/Config.js';
 
 class GetSettings extends AbstractEndpoint {
 	setup () {
@@ -8,7 +8,7 @@ class GetSettings extends AbstractEndpoint {
 	}
 
 	async getSettings (ctx, next) {
-		return super.success(ctx, next, await Config.getConfig());
+		return super.success(ctx, next, Config.data);
 	}
 }
 

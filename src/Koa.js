@@ -9,9 +9,9 @@ import serve from 'koa-static';
 
 import session from 'koa-session';
 import mount from 'koa-mount';
-import grant from '~/grant.js';
+import GrantUrismo from '~/Grant.js';
 
-import setupSocket from '~/socket.js';
+import setupSocket from '~/Socket.js';
 
 // --- Setup Koa
 
@@ -54,7 +54,7 @@ async function setupKoa () {
 
 	app.keys = ['grant_alwaysontv'];
 	app.use(session(app));
-	app.use(mount(grant));
+	app.use(mount(GrantUrismo.middleware));
 
 	app.proxy = true;
 
@@ -64,15 +64,15 @@ async function setupKoa () {
 // ---
 
 import setupRouters from '~/api/index.js';
-import Config from '~/utils/config.js';
-import pino from '~/utils/pino.js';
+import pino from '~/utils/Pino.js';
+import { ServerConfig } from '~/utils/Config.js';
 
 export default async function start () {
 	const app = await setupKoa();
 
 	await setupRouters(app);
 
-	const port = (await Config.getConfig()).server.port;
+	const port = ServerConfig.port;
 
 	const server = app.listen(port, () => {
 		pino.info(`Koa server listening on localhost:${port}`);

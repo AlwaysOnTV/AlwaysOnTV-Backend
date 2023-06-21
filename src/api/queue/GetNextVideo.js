@@ -1,7 +1,7 @@
 import VideoQueue from '~/queue/VideoQueue.js';
 
 import AbstractEndpoint from '~/api/AbstractEndpoint.js';
-import Config from '~/utils/config.js';
+import Config from '~/utils/Config.js';
 
 class GetNextVideo extends AbstractEndpoint {
 	setup () {
@@ -19,7 +19,7 @@ class GetNextVideo extends AbstractEndpoint {
 			if (result) {
 				const data = {
 					...result,
-					video_quality: Config.getCachedConfig().max_video_quality,
+					video_quality: Config.maxVideoQuality,
 				};
 
 				return super.success(ctx, next, data);

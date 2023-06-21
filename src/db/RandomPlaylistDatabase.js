@@ -20,17 +20,28 @@ class RandomPlaylistDatabase extends AbstractDatabase {
 		});
 	}
 
-	async getRandomVideo () {
-		const randomVideo = await this.getKnex()
+	async getRandomVideo (amount = 1) {
+		amount = Math.max(amount, 1);
+		amount = Math.min(amount, 10);
+
+		const randomVideos = await this.getKnex()
 			.select('videoId')
 			.orderByRaw('RANDOM()')
-			.first();
+			.limit(10);
 
-		if (!randomVideo) {
+		if (!randomVideos.length) {
 			return false;
 		}
 
-		return VideoDatabase.getVideo(randomVideo.videoId);
+		if (amount === 1) return VideoDatabase.getVideo(randomVideos[0].videoId);
+
+		const videos = [];
+
+		for(const video of randomVideos) {
+			videos.push(await VideoDatabase.getVideo(video.videoId));
+		}
+
+		return videos;
 	}
 
 	async getAll () {
@@ -47,10 +58,12 @@ class RandomPlaylistDatabase extends AbstractDatabase {
 			)
 			.from('random_playlist')
 			.leftJoin('videos', 'random_playlist.videoId', 'videos.id')
-			.leftJoin('games', 'videos.gameId', 'games.id');
+			.leftJoin('games', 'videos.gameId', 'games.id')
+			.sum('videos.length as playlistLength');
 
 		const playlistData = {
 			videoCount: 0,
+			playlistLength: result[0]?.playlistLength,
 			thumbnail_url: result[0]?.['videos:thumbnail_url'],
 			videos: [],
 			videoInfo: {},

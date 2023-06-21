@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import Knex from 'knex';
 import knexfile from '~root/knexfile.js';
-import pino from '~/utils/pino.js';
+import pino from '~/utils/Pino.js';
 
 let knex;
 

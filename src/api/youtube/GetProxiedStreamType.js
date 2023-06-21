@@ -1,9 +1,9 @@
 import Joi from 'joi';
 
 import AbstractEndpoint from '~/api/AbstractEndpoint.js';
-import Config from '~/utils/config.js';
+import Config from '~/utils/Config.js';
 import Utils from '~/utils/index.js';
-import YTDL from '~/utils/ytdl.js';
+import YTDL from '~/utils/YTDL.js';
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
@@ -20,7 +20,7 @@ class GetProxiedStreamType extends AbstractEndpoint {
 				streamType: Joi.string().required().allow('video', 'audio'),
 			}),
 			query: Joi.object({
-				videoQuality: Joi.number().default(Config.getCachedConfig().max_video_quality),
+				videoQuality: Joi.number().default(Config.maxVideoQuality),
 			}),
 		});
 	}
@@ -28,7 +28,7 @@ class GetProxiedStreamType extends AbstractEndpoint {
 	async getVideoQuality (ctx, next) {
 		const { videoQuality } = ctx.request.query;
 
-		ctx.videoQuality = videoQuality || Config.getCachedConfig().max_video_quality;
+		ctx.videoQuality = videoQuality || Config.maxVideoQuality;
 
 		return next();
 	}

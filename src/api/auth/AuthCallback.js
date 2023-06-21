@@ -1,6 +1,6 @@
 import AbstractEndpoint from '~/api/AbstractEndpoint.js';
 
-import Twitch from '~/utils/twitch.js';
+import Twitch from '~/utils/Twitch.js';
 
 class AuthCallback extends AbstractEndpoint {
 	setup () {
@@ -21,7 +21,7 @@ class AuthCallback extends AbstractEndpoint {
 		try {
 			const { access_token, refresh_token, expires_in } = ctx.session.grant.response.raw;
 
-			await Twitch.updateTwitchData(access_token, refresh_token, expires_in);
+			Twitch.updateTwitchData(access_token, refresh_token, expires_in);
 
 			data = {
 				status: 200,

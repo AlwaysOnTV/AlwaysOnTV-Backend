@@ -1,11 +1,11 @@
 import AbstractQueue from './AbstractQueue.js';
 import RandomPlaylistDatabase from '~/db/RandomPlaylistDatabase.js';
-import Twitch from '~/utils/twitch.js';
-import Config from '~/utils/config.js';
+import Twitch from '~/utils/Twitch.js';
+import Config from '~/utils/Config.js';
 import HistoryQueue from '~/queue/HistoryQueue.js';
-import ytdl from '~/utils/ytdl.js';
-import { io } from '~/socket.js';
-import pino from '~/utils/pino.js';
+import ytdl from '~/utils/YTDL.js';
+import { Socket, io } from '~/Socket.js';
+import pino from '~/utils/Pino.js';
 import VideoDatabase from '~/db/VideoDatabase.js';
 
 class VideoQueue extends AbstractQueue {
@@ -18,6 +18,10 @@ class VideoQueue extends AbstractQueue {
 			current_video: {},
 			items: [],
 		};
+	}
+
+	onQueueChange () {
+		Socket.broadcastQueueHistoryUpdate();
 	}
 
 	async updateChannelInformation (video) {
@@ -65,17 +69,15 @@ class VideoQueue extends AbstractQueue {
 		return this.db.data;
 	}
 
-	async getRandomVideo () {
-		return RandomPlaylistDatabase.getRandomVideo();
+	async getRandomVideo (amount = 1) {
+		return RandomPlaylistDatabase.getRandomVideo(amount);
 	}
 
 	// TODO: This can deadlock if only age-restricted videos are in the random playlist
 	async advanceQueue () {
 		let nextVideo = await super.getAndAdvance();
 
-		const { use_random_playlist } = await Config.getConfig();
-
-		if (!nextVideo && use_random_playlist) {
+		if (!nextVideo && Config.useRandomPlaylist) {
 			const randomVideo = await this.getRandomVideo();
 
 			if (randomVideo) {

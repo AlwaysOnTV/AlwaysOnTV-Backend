@@ -1,6 +1,6 @@
 import Joi from 'joi';
 
-import Config from '~/utils/config.js';
+import Config, { TwitchConfig } from '~/utils/Config.js';
 
 import AbstractEndpoint from '~/api/AbstractEndpoint.js';
 
@@ -40,11 +40,12 @@ class UpdateSettings extends AbstractEndpoint {
 				max_video_quality,
 			} = ctx.request.body;
 
-			await Config.updateTwitchEnabled(twitch_enabled);
-			await Config.updateTwitchClientOrSecret(client_id, client_secret);
-			await Config.updateTitleReplacement(title_replacement);
-			await Config.updateUseRandomPlaylist(use_random_playlist);
-			await Config.updateMaxVideoQuality(max_video_quality);
+			TwitchConfig.isEnabled = twitch_enabled;
+			TwitchConfig.clientID = client_id;
+			TwitchConfig.clientSecret = client_secret;
+
+			Config.useRandomPlaylist = use_random_playlist;
+			Config.maxVideoQuality = max_video_quality;
 
 			return super.success(ctx, next, {
 				updated: {

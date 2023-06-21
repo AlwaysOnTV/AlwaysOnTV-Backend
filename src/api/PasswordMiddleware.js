@@ -1,12 +1,10 @@
-import Config from '~/utils/config.js';
+import Config from '~/utils/Config.js';
 
 export default async function checkPassword (ctx, next) {
-	const { password } = await Config.getConfig();
-
-	if (!password) return next();
+	if (!Config.password) return next();
 
 	const authorization = ctx.headers.authorization || ctx.cookies.get('password');
-	if (!authorization || authorization !== password) {
+	if (!authorization || authorization !== Config.password) {
 		ctx.status = 401;
 		return;
 	}

@@ -1,7 +1,7 @@
 import AbstractDatabase from './AbstractDatabase.js';
 
 import GameDatabase from '~/db/GameDatabase.js';
-import pino from '~/utils/pino.js';
+import pino from '~/utils/Pino.js';
 
 class PlaylistDatabase extends AbstractDatabase {
 	constructor () {
@@ -30,6 +30,7 @@ class PlaylistDatabase extends AbstractDatabase {
 			.groupBy('playlists.id')
 			.orderBy('playlists.id')
 			.count('playlist_videos.videoId as videoCount')
+			.sum('videos.length as playlistLength')
 			.orderBy('playlist_videos.index')
 			.select('videos.thumbnail_url');
 
