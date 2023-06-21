@@ -66,5 +66,3 @@ export default class Socket {
 		});
 	}
 }
-
-export const io = Socket.io;
