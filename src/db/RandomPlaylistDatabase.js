@@ -20,17 +20,28 @@ class RandomPlaylistDatabase extends AbstractDatabase {
 		});
 	}
 
-	async getRandomVideo () {
-		const randomVideo = await this.getKnex()
+	async getRandomVideo (amount = 1) {
+		amount = Math.max(amount, 1);
+		amount = Math.min(amount, 10);
+
+		const randomVideos = await this.getKnex()
 			.select('videoId')
 			.orderByRaw('RANDOM()')
-			.first();
+			.limit(10);
 
-		if (!randomVideo) {
+		if (!randomVideos.length) {
 			return false;
 		}
 
-		return VideoDatabase.getVideo(randomVideo.videoId);
+		if (amount === 1) return VideoDatabase.getVideo(randomVideos[0].videoId);
+
+		const videos = [];
+
+		for(const video of randomVideos) {
+			videos.push(await VideoDatabase.getVideo(video.videoId));
+		}
+
+		return videos;
 	}
 
 	async getAll () {
@@ -41,15 +52,18 @@ class RandomPlaylistDatabase extends AbstractDatabase {
 				'videos.title as videos:title',
 				'videos.thumbnail_url as videos:thumbnail_url',
 				'videos.gameId as videos:gameId',
+				'videos.length as videos:length',
 				'games.id as games:id',
 				'games.title as games:title',
 			)
 			.from('random_playlist')
 			.leftJoin('videos', 'random_playlist.videoId', 'videos.id')
-			.leftJoin('games', 'videos.gameId', 'games.id');
+			.leftJoin('games', 'videos.gameId', 'games.id')
+			.sum('videos.length as playlistLength');
 
 		const playlistData = {
 			videoCount: 0,
+			playlistLength: result[0]?.playlistLength,
 			thumbnail_url: result[0]?.['videos:thumbnail_url'],
 			videos: [],
 			videoInfo: {},
@@ -76,6 +90,7 @@ class RandomPlaylistDatabase extends AbstractDatabase {
 				id: row['videos:id'],
 				title: row['videos:title'],
 				thumbnail_url: row['videos:thumbnail_url'],
+				length: row['videos:length'],
 				gameId: row['videos:gameId'],
 			};
 
@@ -115,22 +130,22 @@ class RandomPlaylistDatabase extends AbstractDatabase {
 
 			const existingVideoIds = existingVideos.map((video) => video.videoId);
 			const videosToInsert = videoIds.filter((videoId) => !existingVideoIds.includes(videoId));
-				
+
 			// Check if videosToInsert exist in the 'videos' table
 			const videosExist = await trx('videos')
 				.whereIn('id', videosToInsert)
 				.select('id');
-			
+
 			const existingVideoIdsFromVideosTable = videosExist.map((video) => video.id);
 			const videosToInsertFinal = videosToInsert.filter((videoId) => existingVideoIdsFromVideosTable.includes(videoId));
-		
+
 			if (videosToInsertFinal.length > 0) {
 				// Insert the new videos
 				await trx(this.table_name).insert(videosToInsertFinal.map((videoId) => ({ videoId })));
 			}
 
 			data.inserted = videosToInsertFinal;
-			data.failed = videoIds.filter((videoId) => !videosToInsertFinal.includes(videoId));	
+			data.failed = videoIds.filter((videoId) => !videosToInsertFinal.includes(videoId));
 		});
 
 		return data;

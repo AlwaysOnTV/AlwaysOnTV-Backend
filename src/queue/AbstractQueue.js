@@ -1,146 +1,177 @@
-import fs from 'node:fs';
-import logging from '~/utils/logging.js';
+import pino from '~/utils/Pino.js';
+
+import { Low } from 'lowdb';
+import { JSONFile } from 'lowdb/node';
 
 export default class AbstractQueue {
 	constructor (path, maxLength = -1) {
-		this.path = path;
-		this.queue = [];
 		this.maxLength = maxLength;
 
-		this.loadQueue();
+		const adapter = new JSONFile(path);
+
+		this.db = new Low(adapter, this.getDefaultData());
+		this.db.read();
 	}
 
-	async configExists () {
-		try {
-			await fs.promises.access(this.path, fs.constants.R_OK | fs.constants.W_OK);
-
-			return true;
-		}
-		catch (error) {
-			return false;
-		}
+	getDefaultData () {
+		return {
+			items: [],
+		};
 	}
+
+	onQueueChange () {}
 
 	async limitLength () {
 		if (this.maxLength === -1) return;
 
-		this.queue.length = Math.min(this.queue.length, this.maxLength);
-	}
+		const items = this.getAll();
 
-	async loadQueue () {
-		if (!(await this.configExists())) {
-			await this.saveQueue();
-		}
-
-		try {
-			this.queue = JSON.parse(await fs.promises.readFile(this.path, 'utf-8'));
-		}
-		catch (error) {
-			logging.error('Error parsing queue', error);
-		}
-	}
-
-	async saveQueue () {
-		this.limitLength();
-
-		await fs.promises.writeFile(this.path, JSON.stringify(this.queue, null, 2));
+		items.length = Math.min(items.length, this.maxLength);
 	}
 
 	async clear () {
-		this.queue.length = 0;
+		const items = this.getAll();
 
-		await this.saveQueue();
+		items.length = 0;
 
-		return this.queue;
+		await this.db.write();
+
+		this.onQueueChange();
+
+		return this.db.data;
 	}
 
-	async get (index) {
-		if (index < 0 || index >= this.queue.length) {
-			logging.error('Invalid index');
+	get (index) {
+		const items = this.getAll();
+
+		if (index < 0 || index >= items.length) {
+			pino.error('Error in AbstractQueue.get - Invalid index');
+			pino.error(`Index: ${index}`);
 			return false;
 		}
-		
-		return this.queue[index];
+
+		return items[index];
 	}
 
-	async getAll () {
-		return this.queue;
+	getData () {
+		return this.db.data;
+	}
+
+	getAll () {
+		return this.getData().items;
 	}
 
 	async add (elements) {
 		elements = Array.isArray(elements) ? elements : [elements];
 
-		this.queue.push(...elements);
+		const items = this.getAll();
+		items.push(...elements);
 
-		await this.saveQueue();
+		this.limitLength();
 
-		return this.queue;
+		await this.db.write();
+
+		this.onQueueChange();
+
+		return this.db.data;
 	}
 
 	async addFirst (elements) {
 		elements = Array.isArray(elements) ? elements : [elements];
 
-		this.queue.unshift(...elements);
+		const items = this.getAll();
+		items.unshift(...elements);
 
-		await this.saveQueue();
+		this.limitLength();
 
-		return this.queue;
+		await this.db.write();
+
+		this.onQueueChange();
+
+		return this.db.data;
 	}
 
 	async remove (index) {
-		if (index < 0 || index >= this.queue.length) {
-			logging.error('Invalid index');
+		const items = this.getAll();
+
+		if (index < 0 || index >= items.length) {
+			pino.error('Error in AbstractQueue.remove - Invalid index');
+			pino.error(`Index: ${index}`);
 			return false;
 		}
 
-		this.queue.splice(index, 1);
+		items.splice(index, 1);
 
-		await this.saveQueue();
+		await this.db.write();
 
-		return this.queue;
+		this.onQueueChange();
+
+		return this.db.data;
 	}
 
 	async move (index, newIndex) {
-		if (!this.queue.length) {
+		const items = this.getAll();
+
+		if (!this.hasItems()) {
 			return 'No items in the queue';
 		}
 
 		if (newIndex === 'start') newIndex = 0;
-		else if(newIndex === 'end') newIndex = this.queue.length - 1;
+		else if(newIndex === 'end') newIndex = items.length - 1;
 
-		index = Math.min(Math.max(index, 0), this.queue.length - 1);
-		newIndex = Math.min(Math.max(newIndex, 0), this.queue.length - 1);
-		
+		index = Math.min(Math.max(index, 0), items.length - 1);
+		newIndex = Math.min(Math.max(newIndex, 0), items.length - 1);
+
 		if (index === newIndex) {
 			return 'index matches newIndex';
 		}
 
-		const item = this.queue.splice(index, 1)[0];
+		const item = items.splice(index, 1)[0];
 
-		this.queue.splice(newIndex, 0, item);
+		items.splice(newIndex, 0, item);
 
-		await this.saveQueue();
+		await this.db.write();
 
-		return this.queue;
+		this.onQueueChange();
+
+		return this.db.data;
 	}
 
-	async hasItems () {
-		return this.queue.length > 0;
+	hasItems () {
+		return this.getAll().length > 0;
 	}
 
-	async getFirst () {
-		if (!(await this.hasItems())) return false;
+	getFirst () {
+		if (!(this.hasItems())) return false;
 
-		return this.queue[0];
+		return this.get(0);
+	}
+
+	async getAndAdvance () {
+		if (!(this.hasItems())) return false;
+
+		const items = this.getAll();
+
+		const result = items.shift();
+
+		await this.db.write();
+
+		this.onQueueChange();
+
+		return result;
 	}
 
 	async advanceQueue () {
-		if (!(await this.hasItems())) return false;
+		if (!(this.hasItems())) return false;
 
-		this.queue.shift();
+		const items = this.getAll();
 
-		await this.saveQueue();
+		items.shift();
 
-		return this.queue[0];
+		await this.db.write();
+
+		this.onQueueChange();
+
+		return items[0];
 	}
 }

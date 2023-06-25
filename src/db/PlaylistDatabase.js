@@ -1,7 +1,7 @@
-import logging from '~/utils/logging.js';
 import AbstractDatabase from './AbstractDatabase.js';
 
 import GameDatabase from '~/db/GameDatabase.js';
+import pino from '~/utils/Pino.js';
 
 class PlaylistDatabase extends AbstractDatabase {
 	constructor () {
@@ -17,7 +17,7 @@ class PlaylistDatabase extends AbstractDatabase {
 			table.increments('id').notNullable().comment('Incremental Playlist ID');
 
 			table.timestamp('created_at').notNullable().defaultTo(this.knex.fn.now()).comment('Playlist Creation Date');
-			
+
 			table.string('title').unique().notNullable().defaultTo(null).comment('Playlist Title');
 		});
 	}
@@ -30,6 +30,7 @@ class PlaylistDatabase extends AbstractDatabase {
 			.groupBy('playlists.id')
 			.orderBy('playlists.id')
 			.count('playlist_videos.videoId as videoCount')
+			.sum('videos.length as playlistLength')
 			.orderBy('playlist_videos.index')
 			.select('videos.thumbnail_url');
 
@@ -44,7 +45,7 @@ class PlaylistDatabase extends AbstractDatabase {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param {*} title
 	 * The playlist title
 	 * @param {*} youTubePlaylist
@@ -53,7 +54,7 @@ class PlaylistDatabase extends AbstractDatabase {
 	 * Whether to add videos that aren't in the database yet to the random playlist
 	 * @param {*} gameId
 	 * The game ID for the newly created games - "Always On" by default
-	 * @returns 
+	 * @returns
 	 */
 	async createPlaylist (
 		title,
@@ -76,10 +77,10 @@ class PlaylistDatabase extends AbstractDatabase {
 					for (const video of playlist.videos) {
 						// Fetch the video to see if we already have it in the database
 						const dbVideo = await trx('videos')
-							.select('id')
+							.select('id', 'length')
 							.where('id', video.id)
 							.first();
-						
+
 						// If we don't have it in the database, add it
 						if (!dbVideo) {
 							await trx('videos')
@@ -87,6 +88,7 @@ class PlaylistDatabase extends AbstractDatabase {
 									id: video.id,
 									title: video.title,
 									thumbnail_url: video.thumbnail_url,
+									length: video.length,
 									gameId,
 								});
 
@@ -95,6 +97,12 @@ class PlaylistDatabase extends AbstractDatabase {
 								await trx('random_playlist')
 									.insert({ videoId: video.id });
 							}
+						}
+						// v1.1.0 update patch, will be removed in a newer version. Maybe v1.2.0
+						else if (!dbVideo.length) {
+							await trx('videos')
+								.where({ id: video.id })
+								.update({ length: video.length });
 						}
 
 						// Get the latest index for the playlist
@@ -119,7 +127,8 @@ class PlaylistDatabase extends AbstractDatabase {
 				});
 			}
 			catch (error) {
-				logging.error(error);
+				pino.error('Error in PlaylistDatabase.createPlaylist');
+				pino.error(error);
 				throw error;
 			}
 		}
@@ -170,7 +179,8 @@ class PlaylistDatabase extends AbstractDatabase {
 				});
 			}
 			catch (error) {
-				logging.error(error);
+				pino.error('Error in PlaylistDatabase.deletePlaylist');
+				pino.error(error);
 				throw error;
 			}
 		}
@@ -192,6 +202,7 @@ class PlaylistDatabase extends AbstractDatabase {
 				'videos.title as videos:title',
 				'videos.thumbnail_url as videos:thumbnail_url',
 				'videos.gameId as videos:gameId',
+				'videos.length as videos:length',
 				'playlist_videos.index as videos:index',
 				'games.id as games:id',
 				'games.title as games:title',
@@ -235,6 +246,7 @@ class PlaylistDatabase extends AbstractDatabase {
 				id: row['videos:id'],
 				title: row['videos:title'],
 				thumbnail_url: row['videos:thumbnail_url'],
+				length: row['videos:length'],
 				gameId: row['videos:gameId'],
 			};
 

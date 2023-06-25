@@ -1,6 +1,6 @@
 import Joi from 'joi';
 
-import YTDL from '~/utils/ytdl.js';
+import YTDL from '~/utils/YTDL.js';
 
 import GameDatabase from '~/db/GameDatabase.js';
 import VideoDatabase from '~/db/VideoDatabase.js';
@@ -39,15 +39,16 @@ class AddVideo extends AbstractEndpoint {
 		try {
 			const { videoId, gameId, addToRandomPlaylist } = ctx.request.body;
 
-			const data = await YTDL.getVideoData(videoId);
-	
+			const data = await YTDL.getVideoInfo(videoId);
+
 			const dbData = {
 				id: data.videoDetails.videoId,
 				title: data.videoDetails.title,
 				gameId,
 				thumbnail_url: data.videoDetails.thumbnails?.reverse()[0]?.url,
+				length: data.videoDetails.lengthSeconds,
 			};
-		
+
 			if ((await VideoDatabase.getByID(dbData.id))) {
 				return super.error(ctx, `Video with ID ${dbData.id} already exists`);
 			}

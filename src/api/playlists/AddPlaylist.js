@@ -4,7 +4,7 @@ import AbstractEndpoint from '~/api/AbstractEndpoint.js';
 import GameDatabase from '~/db/GameDatabase.js';
 import PlaylistDatabase from '~/db/PlaylistDatabase.js';
 
-import YTDL from '~/utils/ytdl.js';
+import YTDL from '~/utils/YTDL.js';
 
 class AddPlaylist extends AbstractEndpoint {
 	setup () {

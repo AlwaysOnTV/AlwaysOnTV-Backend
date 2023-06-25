@@ -1,7 +1,7 @@
 import Joi from 'joi';
 
 import AbstractEndpoint from '~/api/AbstractEndpoint.js';
-import YTDL from '~/utils/ytdl.js';
+import YTDL from '~/utils/YTDL.js';
 
 class GetPlaylistFromYouTube extends AbstractEndpoint {
 	setup () {

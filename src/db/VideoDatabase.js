@@ -1,6 +1,7 @@
-import logging from '~/utils/logging.js';
 import AbstractDatabase from './AbstractDatabase.js';
 import PlaylistVideoDatabase from '~/db/PlaylistVideoDatabase.js';
+import pino from '~/utils/Pino.js';
+import ytdl from '~/utils/YTDL.js';
 
 class VideoDatabase extends AbstractDatabase {
 	constructor () {
@@ -27,12 +28,22 @@ class VideoDatabase extends AbstractDatabase {
 				.comment('Game Reference');
 
 			table.string('thumbnail_url').notNullable().defaultTo(null).comment('YouTube Thumbnail URL');
+
+			table.integer('length').notNullable().defaultTo(0).comment('Video Length In Seconds');
 		});
 	}
 
 	async getAllVideos (orderBy = 'asc') {
 		return this.getKnex()
-			.select('videos.id', 'videos.created_at', 'videos.title', 'videos.thumbnail_url', 'games.id as gameId', 'games.title as gameTitle')
+			.select(
+				'videos.id',
+				'videos.created_at',
+				'videos.title',
+				'videos.thumbnail_url',
+				'videos.length',
+				'games.id as gameId',
+				'games.title as gameTitle',
+			)
 			.join('games', 'videos.gameId', 'games.id')
 			.orderBy('videos.created_at', orderBy);
 	}
@@ -41,11 +52,18 @@ class VideoDatabase extends AbstractDatabase {
 		if (!id) return false;
 
 		const result = await this.getKnex()
-			.select('videos.id', 'videos.title', 'videos.thumbnail_url', 'games.id as gameId', 'games.title as gameTitle')
+			.select(
+				'videos.id',
+				'videos.title',
+				'videos.thumbnail_url',
+				'videos.length',
+				'games.id as gameId',
+				'games.title as gameTitle',
+			)
 			.join('games', 'videos.gameId', 'games.id')
 			.where('videos.id', id)
 			.first();
-	
+
 		if (result) {
 			const { gameId, gameTitle, ...videoData } = result;
 			const videoWithGame = {
@@ -99,12 +117,11 @@ class VideoDatabase extends AbstractDatabase {
 			try {
 				let playlists = false;
 
-				await this.knex.transaction(async trx => {					
+				await this.knex.transaction(async trx => {
 					// Remove video from random playlist
 					await trx('random_playlist')
 						.where('videoId', id)
 						.del();
-					
 
 					// Get all playlist IDs that have this video
 					playlists = await trx('playlist_videos')
@@ -126,7 +143,8 @@ class VideoDatabase extends AbstractDatabase {
 				}
 			}
 			catch (error) {
-				logging.error(error);
+				pino.error('Error in VideoDatabase.deleteVideo');
+				pino.error(error);
 				throw error;
 			}
 		}
@@ -134,6 +152,26 @@ class VideoDatabase extends AbstractDatabase {
 		return this.delete({
 			id,
 		});
+	}
+
+	// v1.1.0 update patch, will be removed in a newer version. Maybe v1.2.0
+	async updateVideoLength (id) {
+		if (!id) return 0;
+
+		const video = await super.getByID(id);
+		if (!video || video.length) return 0;
+
+		const data = await ytdl.getVideoInfo(id);
+
+		const length = data.videoDetails.lengthSeconds;
+
+		await this.update({
+			id,
+		}, {
+			length,
+		});
+
+		return length;
 	}
 }
 

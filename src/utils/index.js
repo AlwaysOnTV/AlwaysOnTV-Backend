@@ -1,53 +1,61 @@
 import got from 'got';
-import Config from '~/utils/config.js';
-import logging from '~/utils/logging.js';
+import { ServerConfig } from '~/utils/Config.js';
+import pino from '~/utils/Pino.js';
 
-class Utils {
-	async proxy (url) {
-		const { use_cors, cors_url } = (await Config.getConfig()).server;
-		if (!use_cors) return url;
-
-		return `${cors_url}/${url}`;
+export default class Utils {
+	static proxy (url) {
+		return `${ServerConfig.api_url}/proxy/${url}`;
 	}
-	
-	async sleep (ms) {
+
+	static async sleep (ms) {
 		return new Promise(r => setTimeout(r, ms));
 	}
 
-	async request (_url, options) {
+	static async request (_url, options = {}) {
 		try {
 			const url = new URL(_url);
-
-			options.headers['content-type'] = 'application/json';
 
 			return await got(url, options).json();
 		}
 		catch (error) {
-			logging.error(error);
+			pino.error('Error in Utils.request');
+			pino.error(error);
 			throw error;
 		}
 	}
 
-	async getAsJSON (url, options = {}) {
-		return this.request(url, {
+	static async requestJSON (_url, options = {}) {
+		try {
+			options.headers = options.headers || {};
+			options.headers['content-type'] = 'application/json';
+
+			return this.request(_url, options);
+		}
+		catch (error) {
+			pino.error('Error in Utils.requestJSON');
+			pino.error(error);
+			throw error;
+		}
+	}
+
+	static async getAsJSON (url, options = {}) {
+		return this.requestJSON(url, {
 			...options,
 			method: 'GET',
 		});
 	}
 
-	async postAsJSON (url, options = {}) {
-		return this.request(url, {
+	static async postAsJSON (url, options = {}) {
+		return this.requestJSON(url, {
 			...options,
 			method: 'POST',
 		});
 	}
 
-	async patchAsJSON (url, options = {}) {
-		return this.request(url, {
+	static async patchAsJSON (url, options = {}) {
+		return this.requestJSON(url, {
 			...options,
 			method: 'PATCH',
 		});
 	}
 }
-
-export default new Utils();

@@ -39,7 +39,7 @@ class DeleteVideoFromPlaylist extends AbstractEndpoint {
 			const playlistId = ctx.playlistId;
 
 			const { index } = ctx.request.body;
-			
+
 			if (!(await PlaylistVideoDatabase.deleteVideoFromPlaylist(playlistId, index))) {
 				return super.error(ctx, `No video at index ${index} found`);
 			}

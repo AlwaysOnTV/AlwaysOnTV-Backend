@@ -37,7 +37,7 @@ class DeleteGameByID extends AbstractEndpoint {
 		try {
 			const gameId = ctx.gameId;
 			const { force } = ctx.request.body;
-			
+
 			const status = await GameDatabase.deleteGame(gameId, force);
 			if (status === true) {
 				return super.success(ctx, next);

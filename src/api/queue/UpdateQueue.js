@@ -26,9 +26,6 @@ class UpdateQueue extends AbstractEndpoint {
 			const { index, newIndex } = ctx.request.body;
 
 			const result = await VideoQueue.move(index, newIndex);
-			if (!Array.isArray(result)) {
-				return super.error(ctx, result);
-			}
 
 			return super.success(ctx, next, result);
 		}

@@ -9,17 +9,18 @@ import serve from 'koa-static';
 
 import session from 'koa-session';
 import mount from 'koa-mount';
-import grant from '~/grant.js';
+import GrantUrismo from '~/Grant.js';
+
+import Socket from '~/Socket.js';
 
 // --- Setup Koa
 
 import path from 'node:path';
 import { readFile } from 'node:fs/promises';
-import logging from '~/utils/logging.js';
 
 async function setupKoa () {
 	const app = new Koa();
-	
+
 	app.use(responseTime({ hrtime: true }));
 	app.use(koaBody({
 		multipart: true,
@@ -29,6 +30,7 @@ async function setupKoa () {
 	app.use(etag());
 	app.use(cors({
 		origin: '*',
+		maxAge: 1728000,
 	}));
 	app.use(json());
 
@@ -45,14 +47,14 @@ async function setupKoa () {
 		) {
 			return next();
 		}
-		
+
 		ctx.set('Content-Type', 'text/html');
 		ctx.body = await readFile('./public/index.html', 'utf-8');
 	});
-	
+
 	app.keys = ['grant_alwaysontv'];
 	app.use(session(app));
-	app.use(mount(grant));
+	app.use(mount(GrantUrismo.middleware));
 
 	app.proxy = true;
 
@@ -62,16 +64,19 @@ async function setupKoa () {
 // ---
 
 import setupRouters from '~/api/index.js';
-import Config from '~/utils/config.js';
+import pino from '~/utils/Pino.js';
+import { ServerConfig } from '~/utils/Config.js';
 
 export default async function start () {
 	const app = await setupKoa();
 
 	await setupRouters(app);
-	
-	const port = (await Config.getConfig()).server.port;
 
-	app.listen(port, () => {
-		logging.info(`Koa server listening on localhost:${port}`);
+	const port = ServerConfig.port;
+
+	const server = app.listen(port, () => {
+		pino.info(`Koa server listening on localhost:${port}`);
 	});
+
+	Socket.setup(server);
 }

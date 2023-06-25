@@ -1,5 +1,5 @@
-import logging from '~/utils/logging.js';
 import AbstractDatabase from './AbstractDatabase.js';
+import pino from '~/utils/Pino.js';
 
 class PlaylistDatabase extends AbstractDatabase {
 	constructor () {
@@ -62,14 +62,15 @@ class PlaylistDatabase extends AbstractDatabase {
 			return true;
 		}
 		catch (error) {
-			logging.error(error);
+			pino.error('Error in PlaylistVideoDatabase.fixPlaylistPositions');
+			pino.error(error);
 			return false;
 		}
 	}
 
 	async addVideoToPlaylist (playlistId, videoId) {
 		if (!playlistId || !videoId) return false;
-		
+
 		const index = (await this.getLatestIndex(playlistId)) + 1;
 
 		await this.insert({
@@ -77,7 +78,7 @@ class PlaylistDatabase extends AbstractDatabase {
 			index,
 			videoId,
 		});
-		
+
 		await this.fixPlaylistPositions(playlistId);
 
 		return true;
@@ -85,7 +86,7 @@ class PlaylistDatabase extends AbstractDatabase {
 
 	async deleteVideoFromPlaylist (playlistId, index) {
 		if (!playlistId || !index) return false;
-		
+
 		if (!(await this.tryGet({ playlistId, index }))) {
 			return false;
 		}
@@ -148,7 +149,8 @@ class PlaylistDatabase extends AbstractDatabase {
 			return true;
 		}
 		catch (error) {
-			logging.error(error);
+			pino.error('Error in PlaylistVideoDatabase.moveVideoToIndex');
+			pino.error(error);
 			return false;
 		}
 	}

@@ -1,6 +1,6 @@
 import AbstractRouter from '~/api/AbstractRouter.js';
 import checkPassword from '~/api/PasswordMiddleware.js';
-import GetGameFromTwitch from '~/api/twitch/GetGameFromTwitch.js';
+import SearchGamesOnIGDB from '~/api/twitch/SearchGamesOnIGDB.js';
 import UpdateTwitchInfo from '~/api/twitch/UpdateTwitchInfo.js';
 
 class TwitchRouter extends AbstractRouter {
@@ -13,7 +13,7 @@ class TwitchRouter extends AbstractRouter {
 
 		router.use(checkPassword);
 
-		router.post('/get-game', ...GetGameFromTwitch);
+		router.post('/search-games', ...SearchGamesOnIGDB);
 		router.post('/update', ...UpdateTwitchInfo);
 	}
 }

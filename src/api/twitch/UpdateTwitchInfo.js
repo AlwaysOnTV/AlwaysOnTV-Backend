@@ -1,7 +1,7 @@
 import Joi from 'joi';
 
 import AbstractEndpoint from '~/api/AbstractEndpoint.js';
-import Twitch from '~/utils/twitch.js';
+import Twitch from '~/utils/Twitch.js';
 
 class UpdateTwitchInfo extends AbstractEndpoint {
 	setup () {
@@ -20,7 +20,7 @@ class UpdateTwitchInfo extends AbstractEndpoint {
 	async updateTwitchInfo (ctx, next) {
 		try {
 			const { title, game_id } = ctx.request.body;
-			
+
 			const result = await Twitch.updateChannelInformation({ title, game_id });
 
 			if (!result) {

@@ -9,7 +9,7 @@ class GetHistory extends AbstractEndpoint {
 
 	async getHistory (ctx, next) {
 		try {
-			return super.success(ctx, next, await HistoryQueue.getAll());
+			return super.success(ctx, next, HistoryQueue.getData());
 		}
 		catch (error) {
 			return super.error(ctx, error);

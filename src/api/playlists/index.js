@@ -22,11 +22,11 @@ class PlaylistRouter extends AbstractRouter {
 
 		router.get('/', ...GetAllPlaylists);
 		router.put('/', ...AddPlaylist);
-		
+
 		router.get('/id/:id', ...GetPlaylistByID);
 		router.post('/id/:id', ...UpdatePlaylistByID);
 		router.post('/id/:id/delete', ...DeletePlaylistByID);
-		
+
 		router.put('/id/:id/video', ...AddVideoToPlaylist);
 		router.post('/id/:id/video', ...UpdateVideoInPlaylist);
 		router.post('/id/:id/video/delete', ...DeleteVideoFromPlaylist);

@@ -12,7 +12,7 @@ class HistoryRouter extends AbstractRouter {
 		super.setupRouter(router);
 
 		router.use(checkPassword);
-		
+
 		router.get('/', ...GetHistory);
 	}
 }

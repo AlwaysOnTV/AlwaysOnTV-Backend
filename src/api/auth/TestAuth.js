@@ -1,5 +1,5 @@
 import AbstractEndpoint from '~/api/AbstractEndpoint.js';
-import Config from '~/utils/config.js';
+import Config from '~/utils/Config.js';
 
 class TestAuth extends AbstractEndpoint {
 	setup () {
@@ -13,8 +13,7 @@ class TestAuth extends AbstractEndpoint {
 			return super.error(ctx, 'Incorrect password', 401);
 		}
 
-		const { password } = await Config.getConfig();
-		if (password && authorization !== password) {
+		if (Config.password && authorization !== Config.password) {
 			return super.error(ctx, 'Incorrect password', 401);
 		}
 

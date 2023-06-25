@@ -1,16 +1,14 @@
-import Config from '~/utils/config.js';
 import { initializeDatabase } from '~/db/index.js';
-import setupKoa from '~/koa.js';
-import setupCorsAnywhere from '~/cors-anywhere.js';
+import setupKoa from '~/Koa.js';
+import Config from '~/utils/Config.js';
 
 async function start () {
-	await Config.init();
+	// Initialize config
+	Config.load();
 
 	await initializeDatabase();
 
 	await setupKoa();
-
-	await setupCorsAnywhere();
 
 	// Initialize queue and history
 	await import('~/queue/VideoQueue.js');

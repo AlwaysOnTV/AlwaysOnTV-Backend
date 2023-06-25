@@ -1,7 +1,7 @@
 import { readdir, stat } from 'node:fs/promises';
 import path from 'node:path';
 import Router from '@koa/router';
-import logging from '~/utils/logging.js';
+import pino from '~/utils/Pino.js';
 
 export default async function setupRouters (app) {
 	const files = await readdir('src/api');
@@ -16,6 +16,6 @@ export default async function setupRouters (app) {
 		app.use(routes);
 		app.use(allowedMethods);
 
-		logging.debug(`Loaded ${file} router`);
+		pino.info(`Loaded ${file} router`);
 	}
 }

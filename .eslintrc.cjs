@@ -37,5 +37,21 @@ module.exports = {
 			'error',
 			'always-multiline',
 		],
+		'no-trailing-spaces': [
+			'error',
+		],
+		'no-multiple-empty-lines': [
+			'error',
+			{
+				'max': 1,
+				'maxEOF': 0,
+			},
+		],
+		'no-empty': [
+			'error',
+			{
+				'allowEmptyCatch': true,
+			},
+		],
 	},
 };

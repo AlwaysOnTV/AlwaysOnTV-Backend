@@ -1,8 +1,6 @@
 import AbstractEndpoint from '~/api/AbstractEndpoint.js';
 import RandomPlaylistDatabase from '~/db/RandomPlaylistDatabase.js';
 
-import YTDL from '~/utils/ytdl.js';
-
 class GetRandomVideo extends AbstractEndpoint {
 	setup () {
 		this.add(this.getRandomVideo);
@@ -17,7 +15,6 @@ class GetRandomVideo extends AbstractEndpoint {
 
 			return super.success(ctx, next, {
 				...randomVideo,
-				...await YTDL.getBestVideoAndAudio(randomVideo.id),
 			});
 		}
 		catch (error) {

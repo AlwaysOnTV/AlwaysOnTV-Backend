@@ -1,8 +1,7 @@
-import YTDL from '~/utils/ytdl.js';
-
 import VideoQueue from '~/queue/VideoQueue.js';
 
 import AbstractEndpoint from '~/api/AbstractEndpoint.js';
+import Config from '~/utils/Config.js';
 
 class GetCurrentVideo extends AbstractEndpoint {
 	setup () {
@@ -11,7 +10,7 @@ class GetCurrentVideo extends AbstractEndpoint {
 
 	async getCurrentVideo (ctx, next) {
 		try {
-			const video = await VideoQueue.getFirst();
+			const video = VideoQueue.getCurrentVideo();
 
 			if (!video) {
 				return super.error(ctx, 'No items in the queue');
@@ -19,7 +18,7 @@ class GetCurrentVideo extends AbstractEndpoint {
 
 			const data = {
 				...video,
-				...await YTDL.getBestVideoAndAudio(video.id),
+				video_quality: Config.maxVideoQuality,
 			};
 
 			return super.success(ctx, next, data);
