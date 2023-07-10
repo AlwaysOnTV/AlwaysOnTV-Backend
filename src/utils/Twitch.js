@@ -34,12 +34,14 @@ class Twitch {
 		return TwitchConfig.clientID;
 	}
 
-	updateTwitchData (access_token, refresh_token, expires_in) {
+	async updateTwitchData (access_token, refresh_token, expires_in) {
 		const expires_at = DateTime.now().plus({ seconds: expires_in });
 
 		TwitchConfig.accessToken = access_token;
 		TwitchConfig.refreshToken = refresh_token;
 		TwitchConfig.expiresAt = expires_at.toISO();
+
+		TwitchConfig.data = await this.getTwitchInfo(access_token);
 	}
 
 	async getAccessToken (force_renew = false) {

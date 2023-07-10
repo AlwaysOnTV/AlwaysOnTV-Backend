@@ -21,7 +21,7 @@ class AuthCallback extends AbstractEndpoint {
 		try {
 			const { access_token, refresh_token, expires_in } = ctx.session.grant.response.raw;
 
-			Twitch.updateTwitchData(access_token, refresh_token, expires_in);
+			await Twitch.updateTwitchData(access_token, refresh_token, expires_in);
 
 			data = {
 				status: 200,

@@ -53,8 +53,15 @@ export default class Config {
 		};
 	}
 
-	static load () {
-		return this.db.read();
+	static async load () {
+		const data = this.db.read();
+
+		const { default: GrantUrismo } = await import('~/Grant.js');
+
+		GrantUrismo.twitchClientID = TwitchConfig.clientID;
+		GrantUrismo.twitchClientSecret = TwitchConfig.clientSecret;
+
+		return data;
 	}
 
 	static save () {
