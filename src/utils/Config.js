@@ -148,7 +148,7 @@ export class TwitchConfig {
 	}
 
 	static async updateGrantConfig () {
-		const { GrantUrismo } = await import('~/Grant.js');
+		const { default: GrantUrismo } = await import('~/Grant.js');
 
 		GrantUrismo.twitchClientID = this.clientID;
 		GrantUrismo.twitchClientSecret = this.clientSecret;
