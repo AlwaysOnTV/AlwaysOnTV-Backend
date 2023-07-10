@@ -41,6 +41,7 @@ class UpdateSettings extends AbstractEndpoint {
 			} = ctx.request.body;
 
 			TwitchConfig.isEnabled = twitch_enabled;
+			TwitchConfig.titleReplacement = title_replacement;
 			TwitchConfig.clientID = client_id;
 			TwitchConfig.clientSecret = client_secret;
 
