@@ -10,10 +10,16 @@ class GetCurrentVideo extends AbstractEndpoint {
 
 	async getCurrentVideo (ctx, next) {
 		try {
-			const video = VideoQueue.getCurrentVideo();
+			let video = VideoQueue.getCurrentVideo();
 
-			if (!video) {
-				return super.error(ctx, 'No items in the queue');
+			if (!video || !video.id) {
+				if (Config.useRandomPlaylist) {
+					video = await VideoQueue.advanceQueue();
+				}
+
+				if (!video || !video.id) {
+					return super.error(ctx, 'No items in the queue');
+				}
 			}
 
 			const data = {

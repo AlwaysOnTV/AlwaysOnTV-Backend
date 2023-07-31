@@ -21,6 +21,26 @@ import { readFile } from 'node:fs/promises';
 async function setupKoa () {
 	const app = new Koa();
 
+	// Error handling
+	app.use(async (ctx, next) => {
+		try {
+			await next();
+		}
+		catch (err) {
+			ctx.app.emit('error', err, ctx);
+		}
+	});
+
+	app.on('error', err => {
+		if (err.code === 'ECONNRESET') {
+			// This is fine, we shall allow it.
+			return;
+		}
+
+		pino.error('Koa Error Handler');
+		pino.error(err);
+	});
+
 	app.use(responseTime({ hrtime: true }));
 	app.use(koaBody({
 		multipart: true,
