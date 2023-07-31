@@ -1,28 +1,28 @@
 import ytdl from '@distube/ytdl-core';
 import ytpl from '@distube/ytpl';
-import ytcog from 'ytcog';
-
-import { addFormatMeta } from '@distube/ytdl-core/lib/format-utils.js';
-
 import ytDashManifestGenerator from '@freetube/yt-dash-manifest-generator';
-import NodeCache from 'node-cache';
-import Config, { ServerConfig } from '~/utils/Config.js';
 import { Duration } from 'luxon';
+import NodeCache from 'node-cache';
+import { ServerConfig } from '~/utils/Config.js';
+import InnertubeParser from '~/utils/ytdl/InnertubeParser.js';
+import YTDLParser from '~/utils/ytdl/YTDLParser.js';
 
-class YTDL {
-	constructor () {
+export default class YTDL {
+	static {
 		this.info_cache = new NodeCache({
-			stdTTL: 60 * 60 * 3, // 3 hours
+			stdTTL: 60 * 60 * 1, // 1 hour
 		});
 
 		this.stream_cache = new NodeCache({
-			stdTTL: 60 * 60 * 3, // 3 hours
+			stdTTL: 60 * 60 * 1, // 1 hour
 		});
 
-		this.session = false;
+		this.useYTDL = false;
+
+		this.parser = this.useYTDL ? new YTDLParser() : new InnertubeParser();
 	}
 
-	async getVideoInfo (youtubeID, force = false) {
+	static async getVideoInfo (youtubeID, force = false) {
 		if (this.info_cache.has(youtubeID) && !force)
 			return this.info_cache.get(youtubeID);
 
@@ -33,13 +33,13 @@ class YTDL {
 		return info;
 	}
 
-	async getPlaylistData (playlistID, withVideos = true) {
+	static async getPlaylistData (playlistID, withVideos = true) {
 		return ytpl(playlistID, {
 			limit: withVideos ? Infinity : 1,
 		});
 	}
 
-	durationStringToSeconds (durationString) {
+	static durationStringToSeconds (durationString) {
 		const split = durationString.split(':').reverse();
 
 		return Duration.fromObject({
@@ -49,7 +49,7 @@ class YTDL {
 		}).as('seconds');
 	}
 
-	async getPlaylist (playlistID, withVideos = true) {
+	static async getPlaylist (playlistID, withVideos = true) {
 		if (!playlistID || !ytpl.validateID(playlistID)) return false;
 
 		const playlist = await this.getPlaylistData(playlistID, withVideos);
@@ -70,76 +70,30 @@ class YTDL {
 		};
 	}
 
-	mergeFormats (video) {
-		const audioFormats = [];
-		const videoFormats = [];
-
-		for (const format of video.formats) {
-			const metaFormat = addFormatMeta(format);
-
-			for (const audioFormat of video.audioStreams) {
-				if (metaFormat.bitrate !== audioFormat.bitrate) continue;
-
-				audioFormats.push({
-					...metaFormat,
-					...audioFormat,
-				});
-
-				break;
-			}
-
-			for (const videoFormat of video.videoStreams) {
-				if (metaFormat.bitrate !== videoFormat.bitrate) continue;
-
-				videoFormats.push({
-					...metaFormat,
-					...videoFormat,
-				});
-
-				break;
-			}
-		}
-
-		return {
-			audioFormats,
-			videoFormats,
-		};
-	}
-
-	async getVideoAndAudioStreams (youtubeID, force = false) {
+	static async getCachedVideoAndAudioStreams (youtubeID, force = false) {
 		if (this.stream_cache.has(youtubeID) && !force)
 			return this.stream_cache.get(youtubeID);
 
-		const session = new ytcog.Session();
-		await session.fetch();
-
-		const video = new ytcog.Video(session, { id: youtubeID });
-		await video.fetch();
-
-		if (!video.formats.length) {
-			return {
-				error: 'possibly_age_restricted',
-			};
-		}
-
-		const cache_data = {
-			...this.mergeFormats(video),
-			duration: video.duration,
-		};
-
-		this.stream_cache.set(youtubeID, cache_data);
-
-		return cache_data;
-	}
-
-	async getBestVideoAndAudio (youtubeID, videoQuality = 1080) {
-		const { error, audioFormats, videoFormats, duration } = await this.getVideoAndAudioStreams(youtubeID);
+		const { error, audioFormats, videoFormats, duration } = await this.parser.getVideoAndAudioStreams(youtubeID);
 		if (error) {
 			throw error;
 		}
 
+		const result = {
+			audioFormats,
+			videoFormats,
+			duration,
+		};
+
+		this.stream_cache.set(youtubeID, result);
+
+		return result;
+	}
+
+	static async getBestVideoAndAudio (youtubeID, videoQuality = 1080) {
+		const { audioFormats, videoFormats, duration } = await this.getCachedVideoAndAudioStreams(youtubeID);
+
 		const bestVideo = ytdl.chooseFormat(videoFormats, {
-			quality: 'highest',
 			filter: format => {
 				if (!format.hasVideo) return false;
 				if (format.hasAudio) return false;
@@ -151,7 +105,6 @@ class YTDL {
 		});
 
 		const bestAudio = ytdl.chooseFormat(audioFormats, {
-			quality: 'highest',
 			filter: 'audioonly',
 		});
 
@@ -162,7 +115,7 @@ class YTDL {
 		};
 	}
 
-	async getDashMPD (youtubeID, videoQuality = 1080) {
+	static async getDashMPD (youtubeID, videoQuality = 1080) {
 		const { video, audio, duration } = await this.getBestVideoAndAudio(youtubeID, videoQuality);
 
 		const api_url = ServerConfig.api_url;
@@ -173,5 +126,3 @@ class YTDL {
 		return ytDashManifestGenerator.generate_dash_file_from_formats([video, audio], duration);
 	}
 }
-
-export default new YTDL();

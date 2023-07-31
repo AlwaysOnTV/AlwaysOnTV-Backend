@@ -58,12 +58,11 @@ class RandomPlaylistDatabase extends AbstractDatabase {
 			)
 			.from('random_playlist')
 			.leftJoin('videos', 'random_playlist.videoId', 'videos.id')
-			.leftJoin('games', 'videos.gameId', 'games.id')
-			.sum('videos.length as playlistLength');
+			.leftJoin('games', 'videos.gameId', 'games.id');
 
 		const playlistData = {
 			videoCount: 0,
-			playlistLength: result[0]?.playlistLength,
+			playlistLength: 0,
 			thumbnail_url: result[0]?.['videos:thumbnail_url'],
 			videos: [],
 			videoInfo: {},
@@ -74,6 +73,7 @@ class RandomPlaylistDatabase extends AbstractDatabase {
 			if (!row['videos:id']) continue;
 
 			playlistData.videoCount++;
+			playlistData.playlistLength += row['videos:length'];
 
 			// --- Video order in the playlist
 

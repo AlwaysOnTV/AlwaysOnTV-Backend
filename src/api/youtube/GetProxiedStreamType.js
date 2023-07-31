@@ -3,7 +3,7 @@ import Joi from 'joi';
 import AbstractEndpoint from '~/api/AbstractEndpoint.js';
 import Config from '~/utils/Config.js';
 import Utils from '~/utils/index.js';
-import YTDL from '~/utils/YTDL.js';
+import YTDL from '~/utils/ytdl/index.js';
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
