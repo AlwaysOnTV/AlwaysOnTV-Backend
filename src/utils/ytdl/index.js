@@ -10,14 +10,14 @@ import YTDLParser from '~/utils/ytdl/YTDLParser.js';
 export default class YTDL {
 	static {
 		this.info_cache = new NodeCache({
-			stdTTL: 60 * 60 * 1, // 1 hour
+			stdTTL: 60 * 60 * 3, // 3 hours
 		});
 
 		this.stream_cache = new NodeCache({
-			stdTTL: 60 * 60 * 1, // 1 hour
+			stdTTL: 60 * 60 * 3, // 3 hours
 		});
 
-		this.useYTDL = false;
+		this.useYTDL = true;
 
 		this.parser = this.useYTDL ? new YTDLParser() : new InnertubeParser();
 	}
