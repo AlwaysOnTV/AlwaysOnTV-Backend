@@ -7,6 +7,7 @@ export default class Socket {
 		this.io = false;
 
 		this.current_video_time = 0;
+		this.current_video_length = 0;
 	}
 
 	static setup (server) {
@@ -17,6 +18,7 @@ export default class Socket {
 		this.io.on('connection', (socket) => {
 			socket.on('playback_update', (msg) => {
 				this.currentVideoTime = msg.time;
+				this.currentVideoLength = msg.length;
 
 				socket.broadcast.emit('update_dashboard', msg);
 			});
@@ -42,7 +44,10 @@ export default class Socket {
 			});
 
 			socket.on('request_video_time', () => {
-				socket.emit('request_video_time', this.currentVideoTime);
+				socket.emit('request_video_time', {
+					progress: this.currentVideoTime,
+					length: this.currentVideoLength,
+				});
 			});
 		});
 	}
@@ -55,8 +60,17 @@ export default class Socket {
 		this.current_video_time = time;
 	}
 
+	static get currentVideoLength () {
+		return this.current_video_length;
+	}
+
+	static set currentVideoLength (length) {
+		this.current_video_length = length;
+	}
+
 	static resetCurrentVideoTime () {
 		this.current_video_time = 0;
+		this.current_video_length = 0;
 	}
 
 	static broadcastQueueHistoryUpdate () {
