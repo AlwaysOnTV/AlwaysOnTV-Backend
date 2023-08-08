@@ -4,6 +4,7 @@ import AbstractEndpoint from '~/api/AbstractEndpoint.js';
 import Config from '~/utils/Config.js';
 import Utils from '~/utils/index.js';
 import YTDL from '~/utils/ytdl/index.js';
+import pino from '~/utils/Pino.js';
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
@@ -37,10 +38,14 @@ class GetProxiedStreamType extends AbstractEndpoint {
 		const { videoId, streamType } = ctx.params;
 		const { videoQuality } = ctx;
 
-		const { video, audio } = await YTDL.getBestVideoAndAudio(videoId, videoQuality);
+		const { video, audio, error } = await YTDL.getBestVideoAndAudio(videoId, videoQuality);
 
-		if (!video || !audio) {
-			await sleep(100);
+		if (error === 'NO_VIDEO_OR_AUDIO' || !video || !audio) {
+			pino.error('Error in GetProxiedStreamType.getProxiedMPDValue');
+			pino.error('No video or audio, retrying...');
+
+			await sleep(1000);
+
 			return this.getProxiedMPDValue(ctx, next);
 		}
 

@@ -3,7 +3,7 @@ import got from 'got';
 
 import pino from '~/utils/Pino.js';
 
-const rangePattern = /bytes=(\d+)-(\d+)/;
+const rangePattern = /^bytes=?(\d*)-?(\d*)$/;
 
 class ProxyRequest extends AbstractEndpoint {
 	setup () {
@@ -12,13 +12,26 @@ class ProxyRequest extends AbstractEndpoint {
 	}
 
 	parseRange (range) {
-		const matches = range.match(rangePattern);
-		if (!matches) return false;
+		try {
+			const matches = range.match(rangePattern);
+			if (!matches) return false;
 
-		return {
-			from: parseInt(matches[1], 10),
-			to: parseInt(matches[2], 10),
-		};
+			const [, start, end] = matches;
+
+			let startByte = start ? parseInt(start, 10) : undefined;
+			let endByte = end ? parseInt(end, 10) : undefined;
+
+			return {
+				start: startByte,
+				end: endByte,
+			};
+		}
+		catch (_) {
+			return {
+				start: 0,
+				end: 0,
+			};
+		}
 	}
 
 	async addHeaders (ctx, next) {
@@ -45,6 +58,7 @@ class ProxyRequest extends AbstractEndpoint {
 		}
 
 		const parsedURL = new URL(url);
+
 		const contentLength = parsedURL.searchParams.get('clen');
 
 		const range = this.parseRange(headers.range);
@@ -55,9 +69,20 @@ class ProxyRequest extends AbstractEndpoint {
 
 		const contentLengthNumber = parseInt(contentLength, 10);
 
-		if (range.from > range.to) range.to = contentLengthNumber;
+		if (range.start > range.end || range.end <= 0) range.end = contentLengthNumber;
 
-		headers.range = `bytes=${range.from}-${range.to}`;
+		let rangeString = '';
+		if (range.start !== undefined && range.end !== undefined) {
+			rangeString = `${range.start}-${range.end}`;
+		}
+		else if (range.start !== undefined) {
+			rangeString = `${range.start}-`;
+		}
+		else if (range.end !== undefined) {
+			rangeString = `${contentLengthNumber - range.end}-${contentLengthNumber}`;
+		}
+
+		headers.range = `bytes=${rangeString}`;
 
 		const data = got.stream(parsedURL, {
 			headers,

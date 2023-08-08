@@ -90,8 +90,15 @@ export default class YTDL {
 		return result;
 	}
 
-	static async getBestVideoAndAudio (youtubeID, videoQuality = 1080) {
-		const { audioFormats, videoFormats, duration } = await this.getCachedVideoAndAudioStreams(youtubeID);
+	static async getBestVideoAndAudio (youtubeID, videoQuality = 1080, force = false) {
+		const { audioFormats, videoFormats, duration } = await this.getCachedVideoAndAudioStreams(youtubeID, force);
+
+		if (!videoFormats?.length || !audioFormats?.length) {
+			return {
+				error: 'NO_VIDEO_OR_AUDIO',
+				message: 'No video or audio formats found.',
+			};
+		}
 
 		const bestVideo = ytdl.chooseFormat(videoFormats, {
 			filter: format => {
@@ -116,7 +123,13 @@ export default class YTDL {
 	}
 
 	static async getDashMPD (youtubeID, videoQuality = 1080) {
-		const { video, audio, duration } = await this.getBestVideoAndAudio(youtubeID, videoQuality);
+		const { video, audio, duration, error } = await this.getBestVideoAndAudio(youtubeID, videoQuality);
+
+		if (error === 'NO_VIDEO_OR_AUDIO') {
+			return {
+				error,
+			};
+		}
 
 		const api_url = ServerConfig.api_url;
 

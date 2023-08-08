@@ -34,6 +34,10 @@ class GetMPDFromYouTube extends AbstractEndpoint {
 			const { videoQuality } = ctx;
 
 			const data = await YTDL.getDashMPD(videoId, videoQuality);
+			if (data.error) {
+				return super.error(ctx, data.error);
+			}
+
 			ctx.body = data;
 			return next();
 		}
